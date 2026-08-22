@@ -63,7 +63,12 @@
     display: flex; align-items: center; justify-content: space-between;
     padding: 6px 6px;
   }
-  .month-nav button { color: #fff; font-size: 22px; width: 44px; height: 40px; }
+  .month-nav button {
+    color: #fff; font-size: 20px; height: 42px; padding: 0 8px;
+    display: flex; align-items: center; gap: 4px; min-width: 74px;
+  }
+  .month-nav button#next-month { justify-content: flex-end; }
+  .month-nav button span { font-size: 11.5px; font-weight: 600; text-transform: capitalize; opacity: .9; line-height: 1.1; }
   .month-label { font-size: 17px; font-weight: 600; text-transform: capitalize; text-align: center; flex: 1; }
   .month-label small { display: block; font-size: 11px; font-weight: 400; opacity: .85; }
 
@@ -87,18 +92,65 @@
   .neg { color: var(--red); } .pos { color: var(--green); }
 
   /* ---------- Category summary ---------- */
-  .cat-summary { margin: 0 10px 10px; background: var(--card); border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
-  .cat-summary h3 { font-size: 13px; color: var(--text-soft); font-weight: 600; padding: 12px 16px 4px; text-transform: uppercase; letter-spacing: .5px; }
-  .cat-sum-row { display: flex; align-items: center; gap: 10px; padding: 7px 16px; }
+  .cat-summary { margin: 0 10px 90px; background: var(--card); border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
+  .cat-sum-head { display: flex; border-bottom: 1px solid var(--line); }
+  .cat-sum-head button {
+    flex: 1; padding: 11px 6px; font-size: 12.5px; font-weight: 700;
+    color: var(--text-soft); text-transform: uppercase; letter-spacing: .5px;
+  }
+  .cat-sum-head button.on { color: var(--teal); box-shadow: inset 0 -3px 0 var(--teal); }
+  .cat-sum-rows { padding-top: 6px; }
+  .cat-sum-empty { text-align: center; color: var(--text-soft); font-size: 13.5px; padding: 18px 16px 22px; }
+  .cat-sum-row { display: flex; align-items: center; gap: 10px; padding: 7px 16px; width: 100%; text-align: left; }
   .cat-sum-row:last-child { padding-bottom: 14px; }
+  .cat-sum-row:active { background: #f6f6f6; }
+  .cat-sum-arrow { color: #ccc; font-size: 20px; line-height: 1; }
   .cat-sum-bar-wrap { flex: 1; min-width: 0; }
   .cat-sum-top { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 3px; }
   .cat-sum-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cat-sum-bar { height: 5px; border-radius: 3px; background: #eee; overflow: hidden; }
   .cat-sum-bar > div { height: 100%; border-radius: 3px; }
 
+  /* ---------- View toggle (calendario / lista) ---------- */
+  .view-toggle { display: flex; gap: 8px; margin: 0 10px 10px; }
+  .view-toggle button {
+    flex: 1; padding: 9px; border-radius: 10px; background: var(--card);
+    color: var(--text-soft); font-weight: 600; font-size: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.07);
+  }
+  .view-toggle button.on { background: var(--teal); color: #fff; }
+
+  /* ---------- Calendar ---------- */
+  .calendar { margin: 0 10px 10px; background: var(--card); border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
+  .cal-dows { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--green-bg); }
+  .cal-dows div { text-align: center; font-size: 11px; font-weight: 700; color: #fff; padding: 7px 0; text-transform: uppercase; letter-spacing: .3px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+  .cal-cell {
+    min-height: 58px; padding: 4px 1px 4px; display: flex; flex-direction: column;
+    align-items: center; gap: 1px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  .cal-cell:nth-child(7n) { border-right: none; }
+  .cal-cell.out { background: #fafafa; }
+  .cal-cell.out .cal-day { color: #ccc; }
+  .cal-cell.today { background: #fff8e1; }
+  .cal-cell.sel { box-shadow: inset 0 0 0 2px var(--teal); }
+  .cal-cell.has:active { background: #eef4f6; }
+  .cal-day { font-size: 14px; line-height: 1.15; }
+  .cal-cell.today .cal-day { font-weight: 700; }
+  .cal-amt { font-size: 9.5px; line-height: 1.3; font-weight: 700; }
+  .cal-amt.o { color: var(--red); }
+  .cal-amt.i { color: var(--green); }
+  .cal-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 14px; padding: 9px 8px; font-size: 11px; color: var(--text-soft); }
+  .cal-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: 0; }
+
+  /* ---------- Day detail ---------- */
+  .day-totals { display: flex; gap: 8px; }
+  .day-totals > div { flex: 1; text-align: center; }
+  .day-totals .lbl { font-size: 11px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .4px; }
+  .day-totals .val { font-size: 15px; font-weight: 700; margin-top: 3px; }
+
   /* ---------- Transactions list ---------- */
-  .tx-section { margin: 0 10px 90px; }
+  .tx-section { margin: 0 10px 10px; }
   .day-group { background: var(--card); border-radius: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
   .day-head {
     display: flex; justify-content: space-between; padding: 9px 16px;
@@ -137,6 +189,10 @@
     display: none; align-items: flex-end;
   }
   .sheet-overlay.open { display: flex; }
+  /* Los detalles de día y de categoría quedan por debajo: al editar un
+     movimiento, la hoja de edición se apila encima y al cerrarla se vuelve
+     a ver el detalle. */
+  #ov-day, #ov-cat-detail { z-index: 38; }
   .sheet {
     background: var(--bg); width: 100%; max-height: 92vh; overflow-y: auto;
     border-radius: 18px 18px 0 0; animation: up .18s ease-out;
@@ -247,14 +303,75 @@
   <div class="sum-row sum-total"><span>Saldo</span><b id="sum-bal"></b></div>
 </div>
 
-<div class="cat-summary" id="cat-summary" style="display:none">
-  <h3>Gastos por categoría</h3>
-  <div id="cat-summary-rows"></div>
+<div class="view-toggle">
+  <button id="view-cal">📅 Calendario</button>
+  <button id="view-list">☰ Lista</button>
+</div>
+
+<div class="calendar" id="calendar">
+  <div class="cal-dows">
+    <div>Lu</div><div>Ma</div><div>Mi</div><div>Ju</div><div>Vi</div><div>Sá</div><div>Do</div>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+  <div class="cal-legend">
+    <span><i style="background:#e53935"></i>Gastos</span>
+    <span><i style="background:#4caf50"></i>Ingresos</span>
+    <span><i style="background:#ffe082"></i>Hoy</span>
+  </div>
 </div>
 
 <div class="tx-section" id="tx-list"></div>
 
+<div class="cat-summary" id="cat-summary">
+  <div class="cat-sum-head">
+    <button id="cs-tab-gasto" class="on">Gastos</button>
+    <button id="cs-tab-ingreso">Ingresos</button>
+  </div>
+  <div class="cat-sum-rows" id="cat-summary-rows"></div>
+</div>
+
 <button class="fab" id="fab">+</button>
+
+<!-- ===== Day detail ===== -->
+<div class="sheet-overlay" id="ov-day">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title" id="day-title"></div>
+      <button class="close-x" data-close="ov-day">✕</button>
+    </div>
+    <div class="form-block">
+      <div class="day-totals">
+        <div><div class="lbl lbl-in">Ingresos</div><div class="val pos" id="day-in"></div></div>
+        <div><div class="lbl lbl-out">Gastos</div><div class="val neg" id="day-out"></div></div>
+        <div><div class="lbl">Saldo</div><div class="val" id="day-bal"></div></div>
+      </div>
+    </div>
+    <div class="form-block" style="padding:0;overflow:hidden" id="day-list-box">
+      <div id="day-list"></div>
+    </div>
+    <button class="primary-btn" id="btn-add-day">+ Agregar movimiento este día</button>
+  </div>
+</div>
+
+<!-- ===== Category detail (movimientos de una categoría) ===== -->
+<div class="sheet-overlay" id="ov-cat-detail">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title" id="cd-title"></div>
+      <button class="close-x" data-close="ov-cat-detail">✕</button>
+    </div>
+    <div class="form-block">
+      <div class="day-totals">
+        <div><div class="lbl">Total del mes</div><div class="val" id="cd-total"></div></div>
+        <div><div class="lbl">Movimientos</div><div class="val" id="cd-count"></div></div>
+        <div><div class="lbl">Promedio</div><div class="val" id="cd-avg"></div></div>
+      </div>
+    </div>
+    <div class="form-block" style="padding:0;overflow:hidden">
+      <div id="cd-list"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ===== Add / Edit transaction ===== -->
 <div class="sheet-overlay" id="ov-tx">
@@ -405,6 +522,10 @@ let config = LS.get('config', { scriptUrl: '' });
 let txCache = LS.get('txCache', {});   // { '2026-08': [tx, …] }
 let queue = LS.get('queue', []);       // ops pendientes de enviar
 let viewMonth = todayStr().slice(0, 7);
+let viewMode = LS.get('viewMode', 'cal');   // 'cal' (calendario) | 'list'
+let catSumType = 'gasto';                   // pestaña del resumen por categoría
+let selectedDay = null;                     // 'YYYY-MM-DD' del día abierto
+let catDetail = null;                       // { type, name } de la categoría abierta
 let syncing = false;
 
 function saveCats() { LS.set('cats', cats); }
@@ -420,21 +541,54 @@ function todayStr() {
 function uid() { return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); }
 const fmtMoney = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
 function money(n) { return fmtMoney.format(n || 0); }
+/** Monto abreviado para las celdas del calendario: 1.678.605 → "1,7M". */
+function shortMoney(n) {
+  n = Math.round(Math.abs(n));
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.', ',') + 'M';
+  if (n >= 10000) return Math.round(n / 1000) + 'k';
+  if (n >= 1000) return (n / 1000).toFixed(1).replace('.', ',') + 'k';
+  return String(n);
+}
 function monthName(m) {
   const [y, mo] = m.split('-').map(Number);
   return new Date(y, mo - 1, 1).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+}
+/** Etiqueta corta del mes desplazado: monthShort('2026-08', -1) → "jul 2026". */
+function monthShort(m, delta) {
+  const [y, mo] = m.split('-').map(Number);
+  const d = new Date(y, mo - 1 + delta, 1);
+  return d.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '') + ' ' + d.getFullYear();
 }
 function dayName(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(y, m - 1, d).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
 }
+/** '2026-08-19' → "mié 19 ago" (para listas que abarcan varios días). */
+function shortDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' }).replace(/[.,]/g, '');
+}
 function parseAmount(s) {
   s = String(s).trim().replace(/\$/g, '').replace(/\s/g, '');
   if (!s) return NaN;
-  // Formato es-AR: 1.234,56 → puntos de miles, coma decimal.
-  if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+  if (s.includes(',')) {
+    // Formato es-AR: 1.234,56 → puntos de miles, coma decimal.
+    s = s.replace(/\./g, '').replace(',', '.');
+  } else if (/^\d{1,3}(\.\d{3})+$/.test(s)) {
+    // Solo puntos y en grupos de tres: son separadores de miles (500.000).
+    s = s.replace(/\./g, '');
+  }
+  // Un punto suelto que no forma grupos de tres (12.5) se toma como decimal.
   return parseFloat(s);
 }
+
+/** Número → texto para el campo de monto: 1234.5 → "1.234,5". */
+function amountToInput(n) {
+  const [i, d] = String(n).split('.');
+  return groupDigits(i) + (d ? ',' + d.slice(0, 2) : '');
+}
+/** "1000000" → "1.000.000" */
+function groupDigits(s) { return s.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
 function catOf(type, name) {
   return (cats[type] || []).find(c => c.name === name) || { name, emoji: '❓', color: '#9e9e9e' };
 }
@@ -556,6 +710,8 @@ function cleanTx(tx) {
 
 function render() {
   $('month-label').innerHTML = monthName(viewMonth) + '<small>' + (viewMonth === todayStr().slice(0,7) ? 'mes actual' : '&nbsp;') + '</small>';
+  $('prev-month').innerHTML = '‹<span>' + monthShort(viewMonth, -1) + '</span>';
+  $('next-month').innerHTML = '<span>' + monthShort(viewMonth, 1) + '</span>›';
 
   const txs = (txCache[viewMonth] || []).slice().sort((a, b) => b.date.localeCompare(a.date) || (b.created || '').localeCompare(a.created || ''));
   const inTotal = txs.filter(t => t.type === 'ingreso').reduce((s, t) => s + t.amount, 0);
@@ -570,34 +726,177 @@ function render() {
   $('bar-in').style.width = tot ? (inTotal / tot * 100) + '%' : '0%';
   $('bar-out').style.width = tot ? (outTotal / tot * 100) + '%' : '0%';
 
-  renderCatSummary(txs, outTotal);
-  renderTxList(txs);
+  renderCatSummary(txs, catSumType === 'ingreso' ? inTotal : outTotal);
+
+  const calOn = viewMode === 'cal';
+  $('view-cal').classList.toggle('on', calOn);
+  $('view-list').classList.toggle('on', !calOn);
+  $('calendar').style.display = calOn ? '' : 'none';
+  $('tx-list').style.display = calOn ? 'none' : '';
+  if (calOn) renderCalendar(txs); else renderTxList(txs);
+
+  refreshOpenDetails();
   updatePendingBadge();
 }
 
-function renderCatSummary(txs, outTotal) {
-  const box = $('cat-summary'), rows = $('cat-summary-rows');
+function renderCatSummary(txs, typeTotal) {
+  const rows = $('cat-summary-rows');
+  $('cs-tab-gasto').classList.toggle('on', catSumType === 'gasto');
+  $('cs-tab-ingreso').classList.toggle('on', catSumType === 'ingreso');
   const byCat = {};
-  txs.filter(t => t.type === 'gasto').forEach(t => { byCat[t.cat] = (byCat[t.cat] || 0) + t.amount; });
+  txs.filter(t => t.type === catSumType).forEach(t => { byCat[t.cat] = (byCat[t.cat] || 0) + t.amount; });
   const entries = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
-  if (!entries.length) { box.style.display = 'none'; return; }
-  box.style.display = '';
   rows.innerHTML = '';
+  if (!entries.length) {
+    rows.innerHTML = '<div class="cat-sum-empty">Sin ' + (catSumType === 'ingreso' ? 'ingresos' : 'gastos') + ' este mes</div>';
+    return;
+  }
   for (const [name, total] of entries) {
-    const c = catOf('gasto', name);
-    const pct = outTotal ? total / outTotal * 100 : 0;
-    const row = document.createElement('div');
+    const c = catOf(catSumType, name);
+    const pct = typeTotal ? total / typeTotal * 100 : 0;
+    const row = document.createElement('button');
+    row.type = 'button';
     row.className = 'cat-sum-row';
     row.innerHTML =
       '<div class="cat-icon" style="width:32px;height:32px;min-width:32px;font-size:15px;background:' + c.color + '">' + c.emoji + '</div>' +
       '<div class="cat-sum-bar-wrap">' +
         '<div class="cat-sum-top"><span class="cat-sum-name"></span><b></b></div>' +
         '<div class="cat-sum-bar"><div style="width:' + pct.toFixed(1) + '%;background:' + c.color + '"></div></div>' +
-      '</div>';
+      '</div>' +
+      '<span class="cat-sum-arrow">›</span>';
     row.querySelector('.cat-sum-name').textContent = name + ' · ' + pct.toFixed(0) + '%';
     row.querySelector('b').textContent = money(total);
+    row.addEventListener('click', () => openCatDetail(catSumType, name));
     rows.appendChild(row);
   }
+}
+
+/* ---------- Hoja: movimientos de una categoría ---------- */
+
+function openCatDetail(type, name) {
+  catDetail = { type, name };
+  renderCatDetail();
+  openSheet('ov-cat-detail');
+}
+
+function renderCatDetail() {
+  if (!catDetail) return;
+  const c = catOf(catDetail.type, catDetail.name);
+  const list = (txCache[viewMonth] || [])
+    .filter(t => t.type === catDetail.type && t.cat === catDetail.name)
+    .sort((a, b) => b.date.localeCompare(a.date) || (b.created || '').localeCompare(a.created || ''));
+  const total = list.reduce((s, t) => s + t.amount, 0);
+
+  $('cd-title').innerHTML = '<span style="margin-right:6px">' + c.emoji + '</span><span></span>';
+  $('cd-title').lastChild.textContent = catDetail.name;
+  $('cd-total').textContent = money(total);
+  $('cd-total').className = 'val ' + (catDetail.type === 'ingreso' ? 'pos' : 'neg');
+  $('cd-count').textContent = list.length;
+  $('cd-avg').textContent = list.length ? money(total / list.length) : money(0);
+
+  const box = $('cd-list');
+  box.innerHTML = '';
+  if (!list.length) {
+    box.innerHTML = '<div class="empty" style="padding:34px 20px"><div class="big">🔍</div>Sin movimientos de esta categoría en ' + monthName(viewMonth) + '.</div>';
+    return;
+  }
+  for (const t of list) box.appendChild(txRowEl(t, true));
+}
+
+/**
+ * Fila de un movimiento, reutilizada por la lista del mes, la del día y la de
+ * una categoría. Con showDate la segunda línea antepone la fecha (las listas
+ * por categoría abarcan todo el mes).
+ */
+function txRowEl(t, showDate) {
+  const c = catOf(t.type, t.cat);
+  const sub = showDate ? shortDate(t.date) + (t.note ? ' · ' + t.note : '') : (t.note || '');
+  const row = document.createElement('div');
+  row.className = 'tx-row';
+  row.innerHTML =
+    '<div class="cat-icon" style="background:' + c.color + '">' + c.emoji + '</div>' +
+    '<div class="tx-info"><div class="tx-cat"></div>' + (sub ? '<div class="tx-note"></div>' : '') + '</div>' +
+    '<div class="tx-amount ' + (t.type === 'ingreso' ? 'pos' : 'neg') + (t.pending ? ' pending' : '') + '"></div>';
+  row.querySelector('.tx-cat').textContent = t.cat;
+  if (sub) row.querySelector('.tx-note').textContent = sub;
+  row.querySelector('.tx-amount').textContent = (t.type === 'ingreso' ? '+' : '−') + money(t.amount);
+  row.addEventListener('click', () => openTxSheet(t));
+  return row;
+}
+
+/* ---------- Vista calendario ---------- */
+
+function renderCalendar(txs) {
+  const grid = $('cal-grid');
+  grid.innerHTML = '';
+  const [y, mo] = viewMonth.split('-').map(Number);
+  const lead = (new Date(y, mo - 1, 1).getDay() + 6) % 7;  // lunes = 0
+  const dim = new Date(y, mo, 0).getDate();                // días del mes
+  const prevDim = new Date(y, mo - 1, 0).getDate();
+  const cells = Math.ceil((lead + dim) / 7) * 7;
+
+  const byDay = {};
+  for (const t of txs) {
+    const d = Number(t.date.slice(8, 10));
+    const b = byDay[d] || (byDay[d] = { in: 0, out: 0 });
+    if (t.type === 'ingreso') b.in += t.amount; else b.out += t.amount;
+  }
+
+  const today = todayStr();
+  for (let i = 0; i < cells; i++) {
+    const n = i - lead + 1;
+    const cell = document.createElement('div');
+
+    if (n < 1 || n > dim) {
+      cell.className = 'cal-cell out';
+      cell.innerHTML = '<div class="cal-day">' + (n < 1 ? prevDim + n : n - dim) + '</div>';
+      grid.appendChild(cell);
+      continue;
+    }
+
+    const ds = viewMonth + '-' + String(n).padStart(2, '0');
+    const b = byDay[n];
+    cell.className = 'cal-cell' + (b ? ' has' : '') + (ds === today ? ' today' : '') + (ds === selectedDay ? ' sel' : '');
+    let html = '<div class="cal-day">' + n + '</div>';
+    if (b && b.out) html += '<div class="cal-amt o">' + shortMoney(b.out) + '</div>';
+    if (b && b.in) html += '<div class="cal-amt i">' + shortMoney(b.in) + '</div>';
+    cell.innerHTML = html;
+    cell.addEventListener('click', () => openDaySheet(ds));
+    grid.appendChild(cell);
+  }
+}
+
+/* ---------- Hoja: detalle de un día ---------- */
+
+function openDaySheet(date) {
+  selectedDay = date;
+  renderDaySheet();
+  openSheet('ov-day');
+  if (viewMode === 'cal') render();
+}
+
+function renderDaySheet() {
+  if (!selectedDay) return;
+  const list = (txCache[selectedDay.slice(0, 7)] || [])
+    .filter(t => t.date === selectedDay)
+    .sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+
+  const dIn = list.filter(t => t.type === 'ingreso').reduce((s, t) => s + t.amount, 0);
+  const dOut = list.filter(t => t.type === 'gasto').reduce((s, t) => s + t.amount, 0);
+
+  $('day-title').textContent = dayName(selectedDay);
+  $('day-in').textContent = money(dIn);
+  $('day-out').textContent = money(dOut);
+  $('day-bal').textContent = money(dIn - dOut);
+  $('day-bal').className = 'val ' + (dIn - dOut < 0 ? 'neg' : 'pos');
+
+  const box = $('day-list');
+  box.innerHTML = '';
+  if (!list.length) {
+    box.innerHTML = '<div class="empty" style="padding:34px 20px"><div class="big">🗓️</div>Sin movimientos este día.</div>';
+    return;
+  }
+  for (const t of list) box.appendChild(txRowEl(t));
 }
 
 function renderTxList(txs) {
@@ -621,20 +920,7 @@ function renderTxList(txs) {
     head.children[0].textContent = dayName(day);
     head.children[1].textContent = money(dayIn - dayOut);
     g.appendChild(head);
-    for (const t of list) {
-      const c = catOf(t.type, t.cat);
-      const row = document.createElement('div');
-      row.className = 'tx-row';
-      row.innerHTML =
-        '<div class="cat-icon" style="background:' + c.color + '">' + c.emoji + '</div>' +
-        '<div class="tx-info"><div class="tx-cat"></div>' + (t.note ? '<div class="tx-note"></div>' : '') + '</div>' +
-        '<div class="tx-amount ' + (t.type === 'ingreso' ? 'pos' : 'neg') + (t.pending ? ' pending' : '') + '"></div>';
-      row.querySelector('.tx-cat').textContent = t.cat;
-      if (t.note) row.querySelector('.tx-note').textContent = t.note;
-      row.querySelector('.tx-amount').textContent = (t.type === 'ingreso' ? '+' : '−') + money(t.amount);
-      row.addEventListener('click', () => openTxSheet(t));
-      g.appendChild(row);
-    }
+    for (const t of list) g.appendChild(txRowEl(t));
     wrap.appendChild(g);
   }
 }
@@ -645,13 +931,13 @@ let editing = null; // { tx, month } cuando se edita
 let formType = 'gasto';
 let formCat = null;
 
-function openTxSheet(tx) {
+function openTxSheet(tx, presetDate) {
   editing = tx ? { tx, month: tx.date.slice(0, 7) } : null;
   formType = tx ? tx.type : 'gasto';
   formCat = tx ? tx.cat : null;
   $('tx-sheet-title').textContent = tx ? 'Editar movimiento' : 'Nuevo movimiento';
-  $('f-amount').value = tx ? String(tx.amount).replace('.', ',') : '';
-  $('f-date').value = tx ? tx.date : todayStr();
+  $('f-amount').value = tx ? amountToInput(tx.amount) : '';
+  $('f-date').value = tx ? tx.date : (presetDate || todayStr());
   $('f-note').value = tx ? (tx.note || '') : '';
   $('btn-del-tx').style.display = tx ? '' : 'none';
   paintTypeToggle();
@@ -679,6 +965,52 @@ function paintCatGrid() {
   }
 }
 
+/**
+ * Reescribe el campo de monto con separadores de miles a medida que se tipea
+ * (1000000 → 1.000.000) y deja el cursor donde corresponde.
+ * Los puntos que aparecen en el campo son SIEMPRE de agrupación (los pone esta
+ * función), así que al reformatear se quitan todos y se reagrupan de cero.
+ */
+function formatAmountInput(isDelete) {
+  const el = $('f-amount');
+  const raw = el.value;
+  const dec = isDelete ? (s => s.replace(/[^\d.,]/g, '')) : decimalize;
+  // Dígitos y comas antes del cursor: sirven para reubicarlo tras reformatear.
+  const before = dec(raw.slice(0, el.selectionStart)).replace(/[^\d,]/g, '').length;
+
+  let s = dec(raw).replace(/\./g, ''); // el resto de los puntos son de miles
+  const c = s.indexOf(',');
+  if (c >= 0) s = s.slice(0, c + 1) + s.slice(c + 1).replace(/,/g, ''); // una sola coma
+
+  const parts = s.split(',');
+  const int = parts[0].replace(/^0+(?=\d)/, '');
+  let out = groupDigits(int);
+  if (parts.length > 1) out += ',' + parts[1].slice(0, 2);
+  el.value = out;
+
+  let count = 0, pos = 0;
+  while (pos < out.length && count < before) {
+    if (/[\d,]/.test(out[pos])) count++;
+    pos++;
+  }
+  el.setSelectionRange(pos, pos);
+}
+
+/**
+ * El teclado del celular puede ofrecer "." en lugar de ",". Un punto al final
+ * (o seguido de 1-2 dígitos) es la coma decimal que tipeó el usuario: los
+ * puntos de agrupación que pone la app siempre llevan 3 dígitos detrás.
+ * No se aplica al borrar: ahí un punto suelto al final es un separador de
+ * miles al que le acaban de comer dígitos (10.500.000 → 10.500.00).
+ */
+function decimalize(s) {
+  return s.replace(/[^\d.,]/g, '').replace(/\.(\d{0,2})$/, ',$1');
+}
+
+$('f-amount').addEventListener('input', e => {
+  formatAmountInput(!!(e.inputType && e.inputType.indexOf('delete') === 0));
+});
+
 $('tg-gasto').addEventListener('click', () => { if (formType !== 'gasto') { formType = 'gasto'; formCat = null; paintTypeToggle(); paintCatGrid(); } });
 $('tg-ingreso').addEventListener('click', () => { if (formType !== 'ingreso') { formType = 'ingreso'; formCat = null; paintTypeToggle(); paintCatGrid(); } });
 
@@ -698,6 +1030,8 @@ $('btn-save-tx').addEventListener('click', () => {
     toast(formType === 'gasto' ? 'Gasto guardado' : 'Ingreso guardado');
   }
   viewMonth = date.slice(0, 7);
+  // Si venía del detalle de un día, seguir al movimiento a su nueva fecha.
+  if ($('ov-day').classList.contains('open')) selectedDay = date;
   closeSheet('ov-tx');
   render();
 });
@@ -710,6 +1044,14 @@ $('btn-del-tx').addEventListener('click', () => {
   render();
   toast('Movimiento eliminado');
 });
+
+/** Repinta las hojas de detalle que hayan quedado abiertas debajo. */
+function refreshOpenDetails() {
+  if ($('ov-day').classList.contains('open')) renderDaySheet();
+  if ($('ov-cat-detail').classList.contains('open')) renderCatDetail();
+}
+
+$('btn-add-day').addEventListener('click', () => openTxSheet(null, selectedDay));
 
 /* ================= Hoja: categorías ================= */
 
@@ -852,9 +1194,14 @@ $('btn-save-settings').addEventListener('click', async () => {
 /* ================= Sheets (abrir/cerrar) ================= */
 
 function openSheet(id) { $(id).classList.add('open'); }
-function closeSheet(id) { $(id).classList.remove('open'); }
+function closeSheet(id) {
+  $(id).classList.remove('open');
+  if (id === 'ov-cat-detail') catDetail = null;
+  // Al cerrar el detalle del día se quita el resaltado del calendario.
+  if (id === 'ov-day' && selectedDay) { selectedDay = null; if (viewMode === 'cal') render(); }
+}
 document.querySelectorAll('.sheet-overlay').forEach(ov => {
-  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
+  ov.addEventListener('click', e => { if (e.target === ov) closeSheet(ov.id); });
 });
 document.querySelectorAll('[data-close]').forEach(b => {
   b.addEventListener('click', () => closeSheet(b.dataset.close));
@@ -866,9 +1213,20 @@ function shiftMonth(delta) {
   const [y, m] = viewMonth.split('-').map(Number);
   const d = new Date(y, m - 1 + delta, 1);
   viewMonth = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  selectedDay = null;
   render();
   pullMonth(viewMonth);
 }
+
+function setViewMode(mode) {
+  viewMode = mode;
+  LS.set('viewMode', mode);
+  render();
+}
+$('view-cal').addEventListener('click', () => setViewMode('cal'));
+$('view-list').addEventListener('click', () => setViewMode('list'));
+$('cs-tab-gasto').addEventListener('click', () => { catSumType = 'gasto'; render(); });
+$('cs-tab-ingreso').addEventListener('click', () => { catSumType = 'ingreso'; render(); });
 $('prev-month').addEventListener('click', () => shiftMonth(-1));
 $('next-month').addEventListener('click', () => shiftMonth(1));
 $('fab').addEventListener('click', () => openTxSheet(null));
