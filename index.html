@@ -286,10 +286,20 @@
   .amount-wrap { display: flex; align-items: center; gap: 8px; }
   .amount-wrap .cur { font-size: 24px; color: var(--faint); font-weight: 600; }
   #f-amount {
-    flex: 1; border: none; outline: none; font-size: 32px; font-weight: 700;
-    color: var(--txt); width: 100%; background: transparent; letter-spacing: -.02em;
+    flex: 1; min-width: 0; border: none; outline: none; font-size: 30px; font-weight: 700;
+    color: var(--txt); background: transparent; letter-spacing: -.02em;
   }
   #f-amount::placeholder { color: var(--faint); }
+  .save-inline {
+    flex: none; background: var(--accent); color: var(--accent-txt);
+    font-size: 15px; font-weight: 700; padding: 12px 18px; border-radius: var(--r-sm);
+  }
+  .save-inline:active { background: var(--accent-hi); transform: scale(.97); }
+
+  /* Cabecera + monto fijos mientras se recorre la lista de categorías. */
+  .tx-top { position: sticky; top: 0; z-index: 3; background: var(--bg); }
+  .tx-top .sheet-head { position: static; }
+  .tx-top .form-block { margin-bottom: 12px; }
 
   .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 2px; }
   .cat-cell { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 7px 2px; border-radius: var(--r-sm); }
@@ -523,19 +533,24 @@
 <div class="sheet-overlay" id="ov-tx">
   <div class="sheet">
     <div class="grab"></div>
-    <div class="sheet-head">
-      <div class="sheet-title" id="tx-sheet-title">Nuevo movimiento</div>
-      <button class="close-x" data-close="ov-tx" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
-    </div>
-    <div class="form-block">
-      <div class="type-toggle">
-        <button id="tg-gasto">Gasto</button>
-        <button id="tg-ingreso">Ingreso</button>
+    <!-- Cabecera + monto + Guardar quedan fijos arriba: así se puede guardar
+         sin volver a subir después de elegir la categoría. -->
+    <div class="tx-top">
+      <div class="sheet-head">
+        <div class="sheet-title" id="tx-sheet-title">Nuevo movimiento</div>
+        <button class="close-x" data-close="ov-tx" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
       </div>
-      <div class="field-label">Monto</div>
-      <div class="amount-wrap">
-        <span class="cur">$</span>
-        <input id="f-amount" type="text" inputmode="decimal" placeholder="0,00" autocomplete="off">
+      <div class="form-block">
+        <div class="type-toggle">
+          <button id="tg-gasto">Gasto</button>
+          <button id="tg-ingreso">Ingreso</button>
+        </div>
+        <div class="field-label">Monto</div>
+        <div class="amount-wrap">
+          <span class="cur">$</span>
+          <input id="f-amount" type="text" inputmode="decimal" placeholder="0,00" autocomplete="off">
+          <button class="save-inline" id="btn-save-tx">Guardar</button>
+        </div>
       </div>
     </div>
     <div class="form-block">
@@ -554,7 +569,6 @@
         </div>
       </div>
     </div>
-    <button class="primary-btn" id="btn-save-tx">Guardar</button>
     <button class="danger-btn" id="btn-del-tx" style="display:none">Eliminar movimiento</button>
   </div>
 </div>
