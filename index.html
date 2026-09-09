@@ -149,6 +149,28 @@
   .day-totals .lbl { font-size: 11px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .4px; }
   .day-totals .val { font-size: 15px; font-weight: 700; margin-top: 3px; }
 
+  /* ---------- List sort toolbar ---------- */
+  .list-toolbar {
+    display: flex; align-items: center; gap: 10px; margin: 0 10px 10px;
+    background: var(--card); border-radius: 12px; padding: 9px 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .list-toolbar > label {
+    font-size: 11px; font-weight: 700; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: .5px; white-space: nowrap;
+  }
+  .sort-wrap { position: relative; flex: 1; min-width: 0; display: flex; justify-content: flex-end; }
+  .sort-wrap::after {
+    content: '\25be'; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+    color: var(--text-soft); font-size: 11px; pointer-events: none;
+  }
+  #sort-mode {
+    max-width: 100%; border: none; background: transparent; outline: none;
+    font-size: 14px; font-weight: 600; color: var(--teal);
+    text-align: right; direction: rtl; padding-right: 15px;
+    -webkit-appearance: none; appearance: none;
+  }
+
   /* ---------- Transactions list ---------- */
   .tx-section { margin: 0 10px 10px; }
   .day-group { background: var(--card); border-radius: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
@@ -330,6 +352,18 @@
     <span><i style="background:#e53935"></i>Gastos</span>
     <span><i style="background:#4caf50"></i>Ingresos</span>
     <span><i style="background:#ffe082"></i>Hoy</span>
+  </div>
+</div>
+
+<div class="list-toolbar" id="list-toolbar">
+  <label for="sort-mode">Ordenar por</label>
+  <div class="sort-wrap">
+    <select id="sort-mode">
+      <option value="fecha-desc">Fecha: más recientes</option>
+      <option value="fecha-asc">Fecha: más antiguos</option>
+      <option value="monto-desc">Monto: de mayor a menor</option>
+      <option value="monto-asc">Monto: de menor a mayor</option>
+    </select>
   </div>
 </div>
 
@@ -563,6 +597,7 @@ let txCache = LS.get('txCache', {});   // { '2026-08': [tx, …] }
 let queue = LS.get('queue', []);       // ops pendientes de enviar
 let viewMonth = todayStr().slice(0, 7);
 let viewMode = LS.get('viewMode', 'cal');   // 'cal' (calendario) | 'list'
+let sortMode = LS.get('sortMode', 'fecha-desc'); // orden de la vista de lista
 let catSumType = 'gasto';                   // pestaña del resumen por categoría
 let selectedDay = null;                     // 'YYYY-MM-DD' del día abierto
 let catDetail = null;                       // { type, name } de la categoría abierta
@@ -801,6 +836,7 @@ function render() {
   $('view-list').classList.toggle('on', !calOn);
   $('calendar').style.display = calOn ? '' : 'none';
   $('tx-list').style.display = calOn ? 'none' : '';
+  $('list-toolbar').style.display = calOn ? 'none' : 'flex';
   if (calOn) renderCalendar(txs); else renderTxList(txs);
 
   refreshOpenDetails();
@@ -974,9 +1010,23 @@ function renderTxList(txs) {
     wrap.innerHTML = '<div class="empty"><div class="big">📋</div>No hay movimientos en ' + monthName(viewMonth) + '.<br>Tocá el botón <b>+</b> para cargar el primero.</div>';
     return;
   }
+  // Por monto: lista plana, con la fecha en cada fila (abarca todo el mes).
+  if (sortMode === 'monto-desc' || sortMode === 'monto-asc') {
+    const signo = sortMode === 'monto-desc' ? -1 : 1;
+    const lista = txs.slice().sort((a, b) => signo * (a.amount - b.amount));
+    const g = document.createElement('div');
+    g.className = 'day-group';
+    for (const t of lista) g.appendChild(txRowEl(t, true));
+    wrap.appendChild(g);
+    return;
+  }
+
+  // Por fecha: agrupado por día.
   const byDay = {};
   txs.forEach(t => (byDay[t.date] = byDay[t.date] || []).push(t));
-  for (const day of Object.keys(byDay).sort().reverse()) {
+  const dias = Object.keys(byDay).sort();
+  if (sortMode === 'fecha-desc') dias.reverse();
+  for (const day of dias) {
     const list = byDay[day];
     const dayIn = list.filter(t => t.type === 'ingreso').reduce((s, t) => s + t.amount, 0);
     const dayOut = list.filter(t => t.type === 'gasto').reduce((s, t) => s + t.amount, 0);
@@ -1300,6 +1350,13 @@ function setViewMode(mode) {
   LS.set('viewMode', mode);
   render();
 }
+$('sort-mode').addEventListener('change', e => {
+  sortMode = e.target.value;
+  LS.set('sortMode', sortMode);
+  render();
+});
+$('sort-mode').value = sortMode;
+
 $('view-cal').addEventListener('click', () => setViewMode('cal'));
 $('view-list').addEventListener('click', () => setViewMode('list'));
 $('cs-tab-gasto').addEventListener('click', () => { catSumType = 'gasto'; render(); });
