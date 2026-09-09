@@ -244,11 +244,13 @@
   .field-label { font-size: 12px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .5px; margin: 4px 0 8px; }
   .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px 2px; }
   .cat-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 7px 2px; border-radius: 10px; }
-  .cat-cell .cat-icon { width: 46px; height: 46px; opacity: .55; transition: .12s; }
+  /* Todos los iconos se ven a pleno color: la selección se marca con un
+     anillo (halo blanco + borde oscuro) que contrasta sobre cualquier color. */
+  .cat-cell .cat-icon { width: 46px; height: 46px; transition: transform .12s, box-shadow .12s; }
   .cat-cell span { font-size: 11px; color: var(--text-soft); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
-  .cat-cell.sel { background: #eef4f6; }
-  .cat-cell.sel .cat-icon { opacity: 1; transform: scale(1.08); }
-  .cat-cell.sel span { color: var(--text); font-weight: 600; }
+  .cat-cell.sel { background: #e4edf0; }
+  .cat-cell.sel .cat-icon { transform: scale(1.06); box-shadow: 0 0 0 2px #fff, 0 0 0 5px var(--teal); }
+  .cat-cell.sel span { color: var(--teal); font-weight: 700; }
   .row-2 { display: flex; gap: 10px; }
   .row-2 > div { flex: 1; }
   .txt-input {
@@ -279,13 +281,17 @@
   .icon-group-title { font-size: 11px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .5px; margin: 12px 0 6px; }
   .icon-group-title:first-child { margin-top: 0; }
   .icon-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
+  /* Sin seleccionar: icono gris oscuro, nítido, sobre gris claro.
+     Seleccionado: se invierte y toma el color elegido para la categoría,
+     que es exactamente como se va a ver después en la app. */
   .icon-cell {
-    aspect-ratio: 1; border-radius: 9px; background: #f4f4f4;
+    aspect-ratio: 1; border-radius: 9px; background: #ececec;
     display: flex; align-items: center; justify-content: center;
+    transition: background .12s;
   }
-  .icon-cell svg { width: 60%; height: 60%; fill: currentColor; opacity: .5; }
-  .icon-cell.sel { box-shadow: inset 0 0 0 2px currentColor; background: #fff; }
-  .icon-cell.sel svg { opacity: 1; }
+  .icon-cell svg { width: 60%; height: 60%; fill: #4a4a4a; }
+  .icon-cell.sel { background: currentColor; box-shadow: 0 0 0 2px #fff, 0 0 0 4px currentColor; }
+  .icon-cell.sel svg { fill: #fff; }
 
   /* ---------- Settings ---------- */
   .set-desc { font-size: 13px; color: var(--text-soft); line-height: 1.45; margin-bottom: 10px; }
