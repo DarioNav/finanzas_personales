@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="sistema">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -11,342 +11,419 @@
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
+  /* ==========================================================
+     Tokens. Todo el color sale de acá: el tema oscuro solo los
+     redefine, ninguna regla de abajo repite un color literal.
+     ========================================================== */
   :root {
-    --teal: #3e5c68;
-    --teal-dark: #334d57;
-    --green: #3d9b46;
-    --green-bg: #4caf50;
-    --red: #e53935;
-    --bg: #f2f2f2;
+    color-scheme: light;
+    --hero: #123c39;          /* bloque oscuro superior */
+    --hero-card: #1b4c48;
+    --hero-line: rgba(255,255,255,.12);
+    --hero-txt: #ffffff;
+    --hero-soft: #9ebeb9;
+
+    --bg: #f4f6f5;
     --card: #ffffff;
-    --text: #444;
-    --text-soft: #888;
-    --line: #e6e6e6;
-    --yellow: #ffc107;
+    --card-2: #fafbfa;
+    --line: #e7eae9;
+    --txt: #17282a;
+    --soft: #788887;
+    --faint: #a6b2b1;
+
+    --green: #2f9e5f;
+    --red: #dc4b45;
+    --amber: #efa62c;
+
+    --accent: #123c39;
+    --accent-hi: #1b524e;
+    --accent-txt: #ffffff;
+    --accent-soft: #e6eeec;
+
+    --chip: #e6eae9;
+    --chip-on: #ffffff;
+    --input: #ffffff;
+
+    --sh: 0 1px 2px rgba(16,40,38,.06), 0 1px 3px rgba(16,40,38,.08);
+    --sh-lg: 0 10px 34px rgba(16,40,38,.18);
+    --r: 16px;
+    --r-sm: 12px;
+    --r-icon: 13px;
   }
+  :root[data-theme="oscuro"] { color-scheme: dark; }
+  :root[data-theme="oscuro"] {
+    --hero: #0c2a28;
+    --hero-card: #143a37;
+    --hero-line: rgba(255,255,255,.10);
+    --hero-txt: #eaf3f1;
+    --hero-soft: #8aa9a5;
+
+    --bg: #0a1615;
+    --card: #12211f;
+    --card-2: #162725;
+    --line: #1f302e;
+    --txt: #e6efed;
+    --soft: #8c9d9b;
+    --faint: #6c7d7b;
+
+    --accent: #2b7a72;
+    --accent-hi: #359087;
+    --accent-soft: #17322f;
+
+    --chip: #162725;
+    --chip-on: #223330;
+    --input: #162725;
+
+    --sh: 0 1px 2px rgba(0,0,0,.3);
+    --sh-lg: 0 10px 34px rgba(0,0,0,.5);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-theme="sistema"] { color-scheme: dark; }
+    :root[data-theme="sistema"] {
+      --hero: #0c2a28;
+      --hero-card: #143a37;
+      --hero-line: rgba(255,255,255,.10);
+      --hero-txt: #eaf3f1;
+      --hero-soft: #8aa9a5;
+
+      --bg: #0a1615;
+      --card: #12211f;
+      --card-2: #162725;
+      --line: #1f302e;
+      --txt: #e6efed;
+      --soft: #8c9d9b;
+      --faint: #6c7d7b;
+
+      --accent: #2b7a72;
+      --accent-hi: #359087;
+      --accent-soft: #17322f;
+
+      --chip: #162725;
+      --chip-on: #223330;
+      --input: #162725;
+
+      --sh: 0 1px 2px rgba(0,0,0,.3);
+      --sh-lg: 0 10px 34px rgba(0,0,0,.5);
+    }
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg); color: var(--text);
+    background: var(--bg); color: var(--txt);
     overscroll-behavior-y: contain;
+    -webkit-font-smoothing: antialiased;
   }
   button { font-family: inherit; border: none; background: none; cursor: pointer; color: inherit; }
   input, select, textarea { font-family: inherit; font-size: 16px; }
+  .eyebrow {
+    font-size: 10.5px; font-weight: 700; letter-spacing: .11em;
+    text-transform: uppercase; color: var(--soft);
+  }
 
-  /* ---------- Header ---------- */
-  header {
-    background: var(--teal); color: #fff;
-    padding: calc(env(safe-area-inset-top) + 10px) 14px 10px;
-    position: sticky; top: 0; z-index: 20;
+  /* ---------- Hero (mes + saldo + ingresos/gastos) ---------- */
+  .hero {
+    background: var(--hero); color: var(--hero-txt);
+    padding: calc(env(safe-area-inset-top) + 12px) 16px 20px;
+    border-radius: 0 0 22px 22px;
   }
-  .header-row { display: flex; align-items: center; justify-content: space-between; }
-  .app-title { font-size: 19px; font-weight: 600; letter-spacing: .3px; }
-  .header-btns { display: flex; gap: 4px; }
+  .hero-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .month-nav { display: flex; align-items: center; gap: 2px; min-width: 0; }
+  .month-nav button {
+    width: 26px; height: 26px; border-radius: 8px; color: var(--hero-soft);
+    font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  }
+  .month-nav button:active { background: var(--hero-line); }
+  #month-label {
+    font-size: 14.5px; font-weight: 600; text-transform: capitalize;
+    padding: 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .hero-actions { display: flex; gap: 2px; }
   .icon-btn {
-    width: 40px; height: 40px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; color: #fff; position: relative;
+    width: 34px; height: 34px; border-radius: 10px; position: relative;
+    display: flex; align-items: center; justify-content: center; color: var(--hero-soft);
   }
-  .icon-btn:active { background: rgba(255,255,255,.15); }
+  .icon-btn:active { background: var(--hero-line); }
+  .icon-btn svg { width: 19px; height: 19px; fill: currentColor; }
   .badge {
-    position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px;
-    border-radius: 8px; background: var(--yellow); color: #333;
-    font-size: 10px; font-weight: 700; display: none;
+    position: absolute; top: 1px; right: 1px; min-width: 15px; height: 15px;
+    border-radius: 8px; background: var(--amber); color: #40300c;
+    font-size: 9.5px; font-weight: 800; display: none;
     align-items: center; justify-content: center; padding: 0 4px;
+    border: 2px solid var(--hero);
   }
   .badge.show { display: flex; }
 
-  /* ---------- Month nav ---------- */
-  .month-nav {
-    background: var(--green-bg); color: #fff;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 6px 6px;
-  }
-  .month-nav button {
-    color: #fff; font-size: 20px; height: 42px; padding: 0 8px;
-    display: flex; align-items: center; gap: 4px; min-width: 74px;
-  }
-  .month-nav button#next-month { justify-content: flex-end; }
-  .month-nav button span { font-size: 11.5px; font-weight: 600; text-transform: capitalize; opacity: .9; line-height: 1.1; }
-  .month-label { font-size: 17px; font-weight: 600; text-transform: capitalize; text-align: center; flex: 1; }
-  .month-label small { display: block; font-size: 11px; font-weight: 400; opacity: .85; }
+  .hero-label { margin-top: 16px; color: var(--hero-soft); font-size: 10.5px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+  .hero-amount { font-size: 34px; font-weight: 700; letter-spacing: -.02em; margin-top: 2px; line-height: 1.1; }
+  .hero-amount .cents { font-size: 19px; font-weight: 600; opacity: .65; }
 
-  /* ---------- Summary card ---------- */
-  .summary {
-    background: var(--card); margin: 10px; border-radius: 12px;
-    padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  .hero-cards { display: flex; gap: 10px; margin-top: 18px; }
+  .hero-cards .hcard {
+    flex: 1; min-width: 0; text-align: left;
+    background: var(--hero-card); border: 1px solid var(--hero-line);
+    border-radius: var(--r-sm); padding: 10px 12px;
   }
-  .bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: #eee; margin-bottom: 12px; }
-  .bar .in { background: var(--green-bg); }
-  .bar .out { background: var(--red); }
-  .sum-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 16px; }
-  .sum-row .lbl-in { color: var(--green); }
-  .sum-row .lbl-out { color: var(--red); }
-  .sum-total {
-    border-top: 1px dashed var(--line); margin-top: 6px; padding-top: 8px;
-    font-weight: 700; font-size: 17px; background: #f7f7f7;
-    margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px;
-    border-radius: 0 0 12px 12px;
-  }
-  .neg { color: var(--red); } .pos { color: var(--green); }
+  .hero-cards .hcard:active { background: var(--hero-line); }
+  .hcard-top { display: flex; align-items: center; gap: 6px; color: var(--hero-soft); font-size: 10.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+  .hcard-top i { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .hcard-top i.in { background: var(--green); }
+  .hcard-top i.out { background: var(--red); }
+  .hcard b { display: block; margin-top: 5px; font-size: 17px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  /* ---------- Category summary ---------- */
-  .cat-summary { margin: 0 10px 90px; background: var(--card); border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
-  .cat-sum-head { display: flex; border-bottom: 1px solid var(--line); }
-  .cat-sum-head button {
-    flex: 1; padding: 11px 6px; font-size: 12.5px; font-weight: 700;
-    color: var(--text-soft); text-transform: uppercase; letter-spacing: .5px;
+  /* ---------- Segmentado Calendario / Lista ---------- */
+  .seg { display: flex; background: var(--chip); border-radius: var(--r-sm); padding: 3px; gap: 3px; }
+  .seg button {
+    flex: 1; padding: 8px 6px; border-radius: 9px; font-size: 13.5px; font-weight: 600;
+    color: var(--soft); display: flex; align-items: center; justify-content: center; gap: 6px;
   }
-  .cat-sum-head button.on { color: var(--teal); box-shadow: inset 0 -3px 0 var(--teal); }
-  .cat-sum-rows { padding-top: 6px; }
-  .cat-sum-empty { text-align: center; color: var(--text-soft); font-size: 13.5px; padding: 18px 16px 22px; }
-  .cat-sum-row { display: flex; align-items: center; gap: 10px; padding: 7px 16px; width: 100%; text-align: left; }
-  .cat-sum-row:last-child { padding-bottom: 14px; }
-  .cat-sum-row:active { background: #f6f6f6; }
-  .cat-sum-arrow { color: #ccc; font-size: 20px; line-height: 1; }
-  .cat-sum-bar-wrap { flex: 1; min-width: 0; }
-  .cat-sum-top { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 3px; }
-  .cat-sum-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .cat-sum-bar { height: 5px; border-radius: 3px; background: #eee; overflow: hidden; }
-  .cat-sum-bar > div { height: 100%; border-radius: 3px; }
+  .seg button svg { width: 15px; height: 15px; fill: currentColor; }
+  .seg button.on { background: var(--chip-on); color: var(--txt); box-shadow: var(--sh); }
+  .view-toggle { margin: 14px 14px 12px; }
 
-  /* ---------- View toggle (calendario / lista) ---------- */
-  .view-toggle { display: flex; gap: 8px; margin: 0 10px 10px; }
-  .view-toggle button {
-    flex: 1; padding: 9px; border-radius: 10px; background: var(--card);
-    color: var(--text-soft); font-weight: 600; font-size: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.07);
-  }
-  .view-toggle button.on { background: var(--teal); color: #fff; }
-
-  /* ---------- Calendar ---------- */
-  .calendar { margin: 0 10px 10px; background: var(--card); border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
-  .cal-dows { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--green-bg); }
-  .cal-dows div { text-align: center; font-size: 11px; font-weight: 700; color: #fff; padding: 7px 0; text-transform: uppercase; letter-spacing: .3px; }
+  /* ---------- Calendario ---------- */
+  .calendar { margin: 0 14px 12px; background: var(--card); border-radius: var(--r); box-shadow: var(--sh); padding: 10px 6px 8px; }
+  .cal-dows { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 4px; }
+  .cal-dows div { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: .06em; color: var(--faint); text-transform: uppercase; padding-bottom: 4px; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
   .cal-cell {
-    min-height: 58px; padding: 4px 1px 4px; display: flex; flex-direction: column;
-    align-items: center; gap: 1px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    min-height: 46px; padding: 3px 1px 4px; display: flex; flex-direction: column;
+    align-items: center; gap: 2px; border-radius: 10px;
   }
-  .cal-cell:nth-child(7n) { border-right: none; }
-  .cal-cell.out { background: #fafafa; }
-  .cal-cell.out .cal-day { color: #ccc; }
-  .cal-cell.today { background: #fff8e1; }
-  .cal-cell.sel { box-shadow: inset 0 0 0 2px var(--teal); }
-  .cal-cell.has:active { background: #eef4f6; }
-  .cal-day { font-size: 14px; line-height: 1.15; }
-  .cal-cell.today .cal-day { font-weight: 700; }
-  .cal-amt { font-size: 9.5px; line-height: 1.3; font-weight: 700; }
+  .cal-cell.out .cal-day { color: var(--faint); opacity: .45; }
+  .cal-cell.has:active { background: var(--accent-soft); }
+  .cal-day {
+    width: 24px; height: 24px; border-radius: 50%; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; line-height: 1;
+  }
+  .cal-cell.today .cal-day { background: var(--accent); color: var(--accent-txt); font-weight: 700; }
+  .cal-cell.sel .cal-day { box-shadow: 0 0 0 2px var(--accent); }
+  .cal-amt { font-size: 9px; line-height: 1.25; font-weight: 700; letter-spacing: -.01em; }
   .cal-amt.o { color: var(--red); }
   .cal-amt.i { color: var(--green); }
-  .cal-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 14px; padding: 9px 8px; font-size: 11px; color: var(--text-soft); }
-  .cal-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: 0; }
 
-  /* ---------- Day detail ---------- */
-  .day-totals { display: flex; gap: 8px; }
-  .day-totals > div { flex: 1; text-align: center; }
-  .day-totals .lbl { font-size: 11px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .4px; }
-  .day-totals .val { font-size: 15px; font-weight: 700; margin-top: 3px; }
-
-  /* ---------- List sort toolbar ---------- */
-  .list-toolbar {
-    display: flex; align-items: center; gap: 10px; margin: 0 10px 10px;
-    background: var(--card); border-radius: 12px; padding: 9px 14px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.08);
-  }
-  .list-toolbar > label {
-    font-size: 11px; font-weight: 700; color: var(--text-soft);
-    text-transform: uppercase; letter-spacing: .5px; white-space: nowrap;
-  }
+  /* ---------- Barra de orden ---------- */
+  .list-toolbar { display: flex; align-items: center; gap: 10px; margin: 0 14px 10px; padding: 0 4px; }
+  .list-toolbar > label { font-size: 10.5px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; color: var(--soft); white-space: nowrap; }
   .sort-wrap { position: relative; flex: 1; min-width: 0; display: flex; justify-content: flex-end; }
-  .sort-wrap::after {
-    content: '\25be'; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-    color: var(--text-soft); font-size: 11px; pointer-events: none;
-  }
+  .sort-wrap::after { content: '\25be'; position: absolute; right: 0; top: 50%; transform: translateY(-50%); color: var(--soft); font-size: 10px; pointer-events: none; }
   #sort-mode {
     max-width: 100%; border: none; background: transparent; outline: none;
-    font-size: 14px; font-weight: 600; color: var(--teal);
+    font-size: 13.5px; font-weight: 600; color: var(--txt);
     text-align: right; direction: rtl; padding-right: 15px;
     -webkit-appearance: none; appearance: none;
   }
 
-  /* ---------- Transactions list ---------- */
-  .tx-section { margin: 0 10px 10px; }
-  .day-group { background: var(--card); border-radius: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
+  /* ---------- Lista de movimientos ---------- */
+  .tx-section { margin: 0 14px 10px; }
+  .day-group { margin-bottom: 14px; }
   .day-head {
-    display: flex; justify-content: space-between; padding: 9px 16px;
-    font-size: 12.5px; font-weight: 600; color: var(--text-soft);
-    background: #fafafa; border-bottom: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 0 4px 6px; font-size: 12px; font-weight: 600; color: var(--soft);
     text-transform: capitalize;
   }
-  .tx-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #f3f3f3; }
-  .tx-row:last-child { border-bottom: none; }
-  .tx-row:active { background: #f6f6f6; }
+  .day-head b { font-weight: 700; }
+  .tx-card { background: var(--card); border-radius: var(--r); box-shadow: var(--sh); overflow: hidden; }
+  .tx-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; }
+  .tx-row + .tx-row { border-top: 1px solid var(--line); }
+  .tx-row:active { background: var(--card-2); }
   .cat-icon {
-    width: 40px; height: 40px; min-width: 40px; border-radius: 50%;
+    width: 38px; height: 38px; min-width: 38px; border-radius: var(--r-icon);
     display: flex; align-items: center; justify-content: center; color: #fff;
   }
-  /* El icono ocupa el 55% del círculo, sea cual sea su tamaño. */
   .cat-icon svg { width: 55%; height: 55%; fill: currentColor; }
   .tx-info { flex: 1; min-width: 0; }
-  .tx-cat { font-size: 15.5px; }
-  .tx-note { font-size: 12.5px; color: var(--text-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tx-amount { font-size: 15.5px; font-weight: 600; white-space: nowrap; }
-  .tx-amount.pending::after { content: '⏳'; font-size: 11px; margin-left: 4px; }
-  .empty { text-align: center; color: var(--text-soft); padding: 50px 20px; font-size: 15px; }
-  .empty .big { font-size: 44px; margin-bottom: 10px; }
+  .tx-cat { font-size: 14.5px; font-weight: 600; }
+  .tx-note { font-size: 12px; color: var(--soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px; }
+  .tx-amount { font-size: 14.5px; font-weight: 700; white-space: nowrap; letter-spacing: -.01em; }
+  .tx-amount.pending::after { content: '•'; color: var(--amber); font-size: 18px; margin-left: 5px; vertical-align: -1px; }
+  .neg { color: var(--red); } .pos { color: var(--green); }
+  .empty { text-align: center; color: var(--soft); padding: 44px 20px; font-size: 14.5px; line-height: 1.5; }
+  .empty svg { width: 40px; height: 40px; fill: var(--faint); margin-bottom: 12px; }
 
   /* ---------- FAB ---------- */
   .fab {
-    position: fixed; right: 18px; bottom: calc(env(safe-area-inset-bottom) + 18px);
-    width: 62px; height: 62px; border-radius: 50%;
-    background: var(--yellow); color: #fff; font-size: 34px; font-weight: 300;
-    box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    position: fixed; right: 18px; bottom: calc(env(safe-area-inset-bottom) + 20px);
+    width: 56px; height: 56px; border-radius: 19px;
+    background: var(--accent); color: var(--accent-txt); font-size: 30px; font-weight: 300;
+    box-shadow: var(--sh-lg);
     display: flex; align-items: center; justify-content: center; z-index: 30;
   }
-  .fab:active { transform: scale(.94); }
+  .fab:active { transform: scale(.94); background: var(--accent-hi); }
 
-  /* ---------- Sheets / modals ---------- */
-  .sheet-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 40;
-    display: none; align-items: flex-end;
-  }
+  /* ---------- Hojas ---------- */
+  .sheet-overlay { position: fixed; inset: 0; background: rgba(8,22,21,.5); z-index: 40; display: none; align-items: flex-end; }
   .sheet-overlay.open { display: flex; }
-  /* Los detalles de día y de categoría quedan por debajo: al editar un
-     movimiento, la hoja de edición se apila encima y al cerrarla se vuelve
-     a ver el detalle. */
-  #ov-day, #ov-cat-detail { z-index: 38; }
+  #ov-day, #ov-cat-detail, #ov-breakdown { z-index: 38; }
   .sheet {
     background: var(--bg); width: 100%; max-height: 92vh; overflow-y: auto;
-    border-radius: 18px 18px 0 0; animation: up .18s ease-out;
-    padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+    border-radius: 22px 22px 0 0; animation: up .2s ease-out;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 18px);
   }
   @keyframes up { from { transform: translateY(40px); opacity: .5; } to { transform: none; opacity: 1; } }
+  .grab { width: 38px; height: 4px; border-radius: 2px; background: var(--line); margin: 8px auto 0; }
   .sheet-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 16px 10px; position: sticky; top: 0; background: var(--bg); z-index: 2;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+    padding: 12px 16px 12px; position: sticky; top: 0; background: var(--bg); z-index: 2;
   }
-  .sheet-title { font-size: 17px; font-weight: 700; }
-  .close-x { font-size: 22px; color: var(--text-soft); width: 40px; height: 40px; }
+  .sheet-title { font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+  .sheet-eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; color: var(--soft); margin-bottom: 3px; }
+  .close-x {
+    width: 32px; height: 32px; min-width: 32px; border-radius: 10px; background: var(--chip);
+    color: var(--soft); font-size: 14px; display: flex; align-items: center; justify-content: center;
+  }
+  .close-x:active { background: var(--line); }
 
-  .form-block { background: var(--card); border-radius: 12px; margin: 0 12px 12px; padding: 14px 16px; }
-  .type-toggle { display: flex; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--line); margin-bottom: 14px; }
-  .type-toggle button { flex: 1; padding: 11px; font-size: 15.5px; font-weight: 600; background: #fff; color: var(--text-soft); }
+  .form-block { background: var(--card); border-radius: var(--r); margin: 0 14px 12px; padding: 14px 16px; box-shadow: var(--sh); }
+  .form-block.flush { padding: 0; overflow: hidden; }
+  .field-label { font-size: 10.5px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; color: var(--soft); margin-bottom: 9px; }
+
+  .type-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
+  .type-toggle button { flex: 1; padding: 11px; border-radius: var(--r-sm); font-size: 14.5px; font-weight: 600; background: var(--chip); color: var(--soft); }
   .type-toggle button.sel-gasto { background: var(--red); color: #fff; }
-  .type-toggle button.sel-ingreso { background: var(--green-bg); color: #fff; }
-  .amount-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .amount-wrap .cur { font-size: 26px; color: var(--text-soft); }
+  .type-toggle button.sel-ingreso { background: var(--green); color: #fff; }
+  .amount-wrap { display: flex; align-items: center; gap: 8px; }
+  .amount-wrap .cur { font-size: 24px; color: var(--faint); font-weight: 600; }
   #f-amount {
-    flex: 1; border: none; outline: none; font-size: 34px; font-weight: 700;
-    color: var(--text); width: 100%; background: transparent;
+    flex: 1; border: none; outline: none; font-size: 32px; font-weight: 700;
+    color: var(--txt); width: 100%; background: transparent; letter-spacing: -.02em;
   }
-  .field-label { font-size: 12px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .5px; margin: 4px 0 8px; }
-  .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px 2px; }
-  .cat-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 7px 2px; border-radius: 10px; }
-  /* Todos los iconos se ven a pleno color: la selección se marca con un
-     anillo (halo blanco + borde oscuro) que contrasta sobre cualquier color. */
-  .cat-cell .cat-icon { width: 46px; height: 46px; transition: transform .12s, box-shadow .12s; }
-  .cat-cell span { font-size: 11px; color: var(--text-soft); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
-  .cat-cell.sel { background: #e4edf0; }
-  .cat-cell.sel .cat-icon { transform: scale(1.06); box-shadow: 0 0 0 2px #fff, 0 0 0 5px var(--teal); }
-  .cat-cell.sel span { color: var(--teal); font-weight: 700; }
-  .row-2 { display: flex; gap: 10px; }
-  .row-2 > div { flex: 1; }
-  .txt-input {
-    width: 100%; border: 1.5px solid var(--line); border-radius: 10px;
-    padding: 10px 12px; outline: none; background: #fff; color: var(--text);
-  }
-  .txt-input:focus { border-color: var(--teal); }
-  .primary-btn {
-    display: block; width: calc(100% - 24px); margin: 4px 12px 0;
-    background: var(--teal); color: #fff; font-size: 17px; font-weight: 700;
-    padding: 14px; border-radius: 12px;
-  }
-  .primary-btn:active { background: var(--teal-dark); }
-  .danger-btn {
-    display: block; width: calc(100% - 24px); margin: 10px 12px 0;
-    color: var(--red); font-size: 15px; font-weight: 600; padding: 10px;
-  }
+  #f-amount::placeholder { color: var(--faint); }
 
-  /* ---------- Categories manager ---------- */
-  .cat-list-row { display: flex; align-items: center; gap: 12px; padding: 9px 16px; border-bottom: 1px solid #f3f3f3; }
-  .cat-list-row span { flex: 1; font-size: 15.5px; }
-  .edit-pencil { width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--line); font-size: 16px; background: #fff; }
-  .add-cat-btn { display: flex; align-items: center; gap: 10px; padding: 13px 16px; color: var(--teal); font-weight: 600; font-size: 15px; width: 100%; }
-  .add-cat-btn .plus { width: 34px; height: 34px; border-radius: 50%; background: var(--yellow); color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+  .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 2px; }
+  .cat-cell { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 7px 2px; border-radius: var(--r-sm); }
+  .cat-cell .cat-icon { width: 44px; height: 44px; border-radius: 15px; transition: transform .12s, box-shadow .12s; }
+  .cat-cell span { font-size: 10.5px; color: var(--soft); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  .cat-cell.sel { background: var(--accent-soft); }
+  .cat-cell.sel .cat-icon { transform: scale(1.05); box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--accent); }
+  .cat-cell.sel span { color: var(--txt); font-weight: 700; }
+
+  .row-2 { display: flex; gap: 10px; }
+  .row-2 > div { flex: 1; min-width: 0; }
+  .txt-input {
+    width: 100%; border: 1.5px solid var(--line); border-radius: var(--r-sm);
+    padding: 11px 12px; outline: none; background: var(--input); color: var(--txt);
+  }
+  .txt-input:focus { border-color: var(--accent); }
+  .primary-btn {
+    display: block; width: calc(100% - 28px); margin: 4px 14px 0;
+    background: var(--accent); color: var(--accent-txt); font-size: 16px; font-weight: 700;
+    padding: 15px; border-radius: var(--r-sm);
+  }
+  .primary-btn:active { background: var(--accent-hi); }
+  .danger-btn { display: block; width: calc(100% - 28px); margin: 10px 14px 0; color: var(--red); font-size: 14.5px; font-weight: 600; padding: 10px; }
+
+  /* ---------- Pestañas dentro de hojas ---------- */
+  .tabs { margin: 0 14px 12px; }
+
+  /* ---------- Totales de día / categoría ---------- */
+  .day-totals { display: flex; gap: 8px; }
+  .day-totals > div { flex: 1; text-align: center; }
+  .day-totals .lbl { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+  .day-totals .val { font-size: 15px; font-weight: 700; margin-top: 4px; letter-spacing: -.01em; }
+
+  /* ---------- Rosquilla "En qué se fue" ---------- */
+  .donut-row { display: flex; align-items: center; gap: 14px; }
+  .donut { width: 124px; min-width: 124px; }
+  .donut svg { width: 100%; display: block; }
+  .dt-lbl { font-size: 11px; font-weight: 700; letter-spacing: .1em; fill: var(--soft); text-anchor: middle; }
+  .dt-val { font-size: 22px; font-weight: 700; fill: var(--txt); text-anchor: middle; letter-spacing: -.02em; }
+  .donut-legend { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+  .lg-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+  .lg-row i { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+  .lg-row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--soft); }
+  .lg-row b { font-weight: 700; }
+
+  .bd-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; width: 100%; text-align: left; }
+  .bd-row + .bd-row { border-top: 1px solid var(--line); }
+  .bd-row:active { background: var(--card-2); }
+  .bd-row .nm { flex: 1; min-width: 0; font-size: 14.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bd-row .am { font-size: 14.5px; font-weight: 700; white-space: nowrap; }
+  .bd-row .ar { color: var(--faint); font-size: 17px; line-height: 1; }
+
+  /* ---------- Gestor de categorías ---------- */
+  .cat-list-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+  .cat-list-row + .cat-list-row { border-top: 1px solid var(--line); }
+  .cat-list-row > span { flex: 1; font-size: 14.5px; font-weight: 600; }
+  .edit-pencil { width: 34px; height: 34px; border-radius: 10px; background: var(--chip); color: var(--soft); display: flex; align-items: center; justify-content: center; }
+  .edit-pencil svg { width: 16px; height: 16px; fill: currentColor; }
+  .add-cat-btn { display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: var(--txt); font-weight: 600; font-size: 14.5px; width: 100%; border-top: 1px solid var(--line); }
+  .add-cat-btn .plus { width: 38px; height: 38px; border-radius: var(--r-icon); background: var(--amber); color: #fff; font-size: 22px; font-weight: 400; display: flex; align-items: center; justify-content: center; }
+
+  /* ---------- Editor de categoría ---------- */
+  .cat-preview { display: flex; align-items: center; gap: 12px; padding: 4px 0 14px; }
+  .cat-preview .nm { font-size: 15px; font-weight: 700; }
+  .cat-preview .nm.vacio { color: var(--faint); font-weight: 500; }
   .color-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
-  .color-dot { width: 32px; height: 32px; border-radius: 50%; border: 3px solid transparent; }
-  .color-dot.sel { border-color: var(--text); }
-  .icon-group-title { font-size: 11px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .5px; margin: 12px 0 6px; }
+  .color-dot { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 3px solid transparent; background-clip: padding-box; }
+  .color-dot.sel { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--txt); }
+  .icon-group-title { font-size: 10px; font-weight: 700; color: var(--faint); text-transform: uppercase; letter-spacing: .09em; margin: 13px 0 6px; }
   .icon-group-title:first-child { margin-top: 0; }
   .icon-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
-  /* Sin seleccionar: icono gris oscuro, nítido, sobre gris claro.
-     Seleccionado: se invierte y toma el color elegido para la categoría,
-     que es exactamente como se va a ver después en la app. */
   .icon-cell {
-    aspect-ratio: 1; border-radius: 9px; background: #ececec;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .12s;
+    aspect-ratio: 1; border-radius: 10px; background: var(--chip);
+    display: flex; align-items: center; justify-content: center; transition: background .12s;
   }
-  .icon-cell svg { width: 60%; height: 60%; fill: #4a4a4a; }
-  .icon-cell.sel { background: currentColor; box-shadow: 0 0 0 2px #fff, 0 0 0 4px currentColor; }
+  .icon-cell svg { width: 58%; height: 58%; fill: var(--soft); }
+  .icon-cell.sel { background: currentColor; box-shadow: 0 0 0 2px var(--card), 0 0 0 4px currentColor; }
   .icon-cell.sel svg { fill: #fff; }
 
-  /* ---------- Settings ---------- */
-  .set-desc { font-size: 13px; color: var(--text-soft); line-height: 1.45; margin-bottom: 10px; }
-  .status-line { display: flex; align-items: center; gap: 8px; font-size: 14px; padding: 6px 0; }
-  .dot { width: 10px; height: 10px; border-radius: 50%; background: #bbb; }
-  .dot.ok { background: var(--green-bg); } .dot.bad { background: var(--red); } .dot.warn { background: var(--yellow); }
+  /* ---------- Configuración ---------- */
+  .set-desc { font-size: 12.5px; color: var(--soft); line-height: 1.5; margin-bottom: 10px; }
+  .status-line { display: flex; align-items: center; gap: 9px; font-size: 13.5px; padding: 6px 0; }
+  .status-line > span:nth-child(2) { flex: 1; min-width: 0; }
+  .status-meta { color: var(--faint); font-size: 12px; white-space: nowrap; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--faint); flex: none; }
+  .dot.ok { background: var(--green); } .dot.bad { background: var(--red); } .dot.warn { background: var(--amber); }
 
   /* ---------- Toast ---------- */
   #toast {
     position: fixed; left: 50%; transform: translateX(-50%) translateY(20px);
-    bottom: calc(env(safe-area-inset-bottom) + 95px);
-    background: #333; color: #fff; padding: 11px 20px; border-radius: 24px;
-    font-size: 14px; opacity: 0; pointer-events: none; transition: .25s; z-index: 60;
-    max-width: 86vw; text-align: center;
+    bottom: calc(env(safe-area-inset-bottom) + 92px);
+    background: var(--txt); color: var(--bg); padding: 11px 20px; border-radius: 22px;
+    font-size: 13.5px; font-weight: 500; opacity: 0; pointer-events: none; transition: .25s; z-index: 60;
+    max-width: 86vw; text-align: center; box-shadow: var(--sh-lg);
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  .tabs { display: flex; background: var(--card); margin: 0 12px 12px; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--line); }
-  .tabs button { flex: 1; padding: 11px; font-weight: 600; color: var(--text-soft); background: #fff; }
-  .tabs button.on { background: var(--teal); color: #fff; }
 </style>
 </head>
 <body>
 
 <!-- Iconos: Material Symbols Rounded (Apache 2.0), incrustados para que
      la app funcione sin conexion y sin depender de ningun CDN. -->
-<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="i-agua" viewBox="0 -960 960 960"><path d="M251.5-174Q160-268 160-408q0-64 29-127t72.5-121q43.5-58 94-108.5T450-854q7-6 14.5-8.5T480-865q8 0 15.5 2.5T510-854q44 39 94.5 89.5t94 108.5Q742-598 771-535t29 127q0 140-91.5 234T480-80q-137 0-228.5-94ZM479-208q16 0 24.5-5.5T512-230q0-11-8.5-17t-25.5-6q-42 0-85.5-26.5T337-373q-2-9-9-14.5t-15-5.5q-11 0-17 8.5t-4 17.5q15 84 71 121.5T479-208Z"/></symbol><symbol id="i-ahorro" viewBox="0 -960 960 960"><path d="M230-120q-21 0-39.49-13.96Q172.02-147.93 166-168q-25-86-41.54-148.46-16.54-62.46-26.37-109.68-9.82-47.22-13.95-83.79Q80-546.49 80-580q0-92 64-156t156-64h200q27-36 68.5-58t91.5-22q25 0 42.5 17.5T720-820q0 6-1.5 12t-3.5 11q-4 11-7.5 22t-5.5 24l91 91h57q12.75 0 21.38 8.62Q880-642.75 880-630v227q0 10.24-5.5 18.12Q869-377 859-374l-91.93 30.3L713-163q-6.03 19.61-21.84 31.31Q675.34-120 655-120H540q-24.75 0-42.37-17.63Q480-155.25 480-180v-20h-80v20q0 24.75-17.62 42.37Q364.75-120 340-120H230Zm438.5-411.5Q680-543 680-560t-11.5-28.5Q657-600 640-600t-28.5 11.5Q600-577 600-560t11.5 28.5Q623-520 640-520t28.5-11.5ZM490-620q12.75 0 21.38-8.68 8.62-8.67 8.62-21.5 0-12.82-8.62-21.32-8.63-8.5-21.38-8.5H350q-12.75 0-21.37 8.68-8.63 8.67-8.63 21.5 0 12.82 8.63 21.32 8.62 8.5 21.37 8.5h140Z"/></symbol><symbol id="i-anteojos" viewBox="0 -960 960 960"><path d="M268-340q35 0 63.5-21.5T373-418l15-44q21-59-6-108.5T302-620H139l21 183q5 42 35.5 69.5T268-340Zm424 0q42 0 72.5-28t35.5-70l21-182H659q-53 0-80 49.5T572-461l15 43q12 35 41 56.5t64 21.5Zm-423 60q-65 0-112.5-43T101-432L78-620h-8q-13 0-21.5-8.5T40-650q0-13 8.5-21.5T70-680h229q40 0 76.5 22.5T438-594h85q26-41 62.5-63.5T662-680h228q13 0 21.5 8.5T920-650q0 13-8.5 21.5T890-620h-8l-23 188q-8 66-55.5 109T691-280q-53 0-97-32t-64-86l-15-41q-3-9-5.5-20t-4.5-25h-50q-2 13-4.5 23.5T445-441l-15 42q-20 54-64 86.5T269-280Z"/></symbol><symbol id="i-arte" viewBox="0 -960 960 960"><path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-84 32-157t87.5-127q55.5-54 130-85T489-880q79 0 150 26.5T763.5-780q53.5 47 85 111.5T880-527q0 108-63 170.5T650-294h-75q-18 0-31 14t-13 31q0 20 14.5 38t14.5 43q0 26-24.5 57T480-80ZM282-469q15-15 15-35t-15-35q-15-15-35-15t-35 15q-15 15-15 35t15 35q15 15 35 15t35-15Zm126-170q15-15 15-35t-15-35q-15-15-35-15t-35 15q-15 15-15 35t15 35q15 15 35 15t35-15Zm214 0q15-15 15-35t-15-35q-15-15-35-15t-35 15q-15 15-15 35t15 35q15 15 35 15t35-15Zm131 170q15-15 15-35t-15-35q-15-15-35-15t-35 15q-15 15-15 35t15 35q15 15 35 15t35-15Z"/></symbol><symbol id="i-auto" viewBox="0 -960 960 960"><path d="M200-204v44q0 16.67-11.74 28.33Q176.53-120 159.76-120q-16.76 0-28.26-11.67Q120-143.33 120-160v-304q0-4.67.5-9.33.5-4.67 2.5-9.67l78-236q6-19 21.75-30T258-760h444q19.5 0 35.25 11T759-719l78 236q2 5 2.5 9.67.5 4.66.5 9.33v304q0 16.67-11.74 28.33Q816.53-120 799.76-120 783-120 771-131.96T759-161v-43H200Zm3-330h554l-55-166H258l-55 166Zm82.76 220q23.24 0 38.74-15.75Q340-345.5 340-368q0-23.33-15.75-39.67Q308.5-424 286-424q-23.33 0-39.67 16.26Q230-391.47 230-368.24q0 23.24 16.26 38.74 16.27 15.5 39.5 15.5ZM675-314q23.33 0 39.67-15.75Q731-345.5 731-368q0-23.33-16.26-39.67Q698.47-424 675.24-424q-23.24 0-38.74 16.26-15.5 16.27-15.5 39.5 0 23.24 15.75 38.74Q652.5-314 675-314Z"/></symbol><symbol id="i-avion" viewBox="0 -960 960 960"><path d="M409-421 137-311q-20 8-38.5-4T80-350v-18q0-11 5-19.5T98-402l311-219v-188q0-29 21-50t50-21q29 0 50 21t21 50v188l311 219q8 6 13 14.5t5 19.5v18q0 23-18.5 35t-38.5 4L551-421v172l109 76q7 5 11 12.5t4 15.5v19q0 17-13.5 27.5T631-93l-151-46-151 46q-17 5-30.5-5.5T285-126v-19q0-8 4-15.5t11-12.5l109-76v-172Z"/></symbol><symbol id="i-banco" viewBox="0 -960 960 960"><path d="M212-271v-279q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v279q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Zm242 0v-279q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v279q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37ZM110-121q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32Q97.25-181 110-181h740q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H110Zm578-150v-279q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v279q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Zm166-369H103q-9.58 0-16.29-6.71Q80-653.42 80-663v-17q0-6 3.5-11.5T92-700l358-204q14.17-8 30-8t30 8l357 203q6 4 9.5 10t3.5 13.5v10.23q0 11.59-7.47 19.43Q865.05-640 854-640Z"/></symbol><symbol id="i-basquet" viewBox="0 -960 960 960"><path d="M81-510q2-47 23-105t52-101q63 54 89 106t33 100H81Zm601 0q7-48 33-100t89-106q31 43 52 101t23 105H682ZM156-245q-31-43-52-100.5T81-450h197q-7 48-33 99.5T156-245Zm648 0q-63-54-89-105.5T682-450h197q-2 47-23 104.5T804-245ZM339-510q-8-61-37-121.5T196-762q43-42 106-76t148-41v369H339Zm171 0v-369q85 7 148.5 41T765-762q-77 70-106.5 130.5T621-510H510ZM450-81q-90-7-150.5-41.5T196-199q77-70 106-130t37-121h111v369Zm60 0v-369h111q8 61 37.5 121T765-199q-43 42-104 76.5T510-81Z"/></symbol><symbol id="i-bebe" viewBox="0 -960 960 960"><path d="M587.5-97.68q-17.5-17.67-17.5-42.5 0-24.82 17.68-42.32 17.67-17.5 42.5-17.5 24.82 0 42.32 17.68 17.5 17.67 17.5 42.5 0 24.82-17.68 42.32Q654.65-80 629.82-80 605-80 587.5-97.68ZM239.82-80Q215-80 197.5-97.68q-17.5-17.67-17.5-42.5 0-24.82 17.68-42.32 17.67-17.5 42.5-17.5 24.82 0 42.32 17.68 17.5 17.67 17.5 42.5 0 24.82-17.68 42.32Q264.65-80 239.82-80ZM281-260q-26 0-36.5-23t6.5-43l397-467q17-20 43.5-33.5T746-840q56 0 95 39t39 95v1q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.7-8.5-8.69-8.5-21.54v-.76q0-31-21.5-52.5T746-780q-16.89 0-29.95 8Q703-764 689-748l-29 33v395q0 24.75-17.62 42.37Q624.75-260 600-260H281Zm131-317L239-750q-11-10.51-8.5-24.26Q233-788 245-796q35-18 76.85-28 41.85-10 85.15-10 47 0 93.5 12.5T590-786L412-577Z"/></symbol><symbol id="i-bici" viewBox="0 -960 960 960"><path d="M194-160q-81 0-137.5-57T0-355q0-81 57-137.5T195-549q71 0 124.5 45.5T384-388h51l-82-232h-43q-13 0-21.5-8.5T280-650q0-13 8.5-21.5T310-680h128q13 0 21.5 8.5T468-650q0 13-8.5 21.5T438-620h-22l26 71h222l-71-191h-75q-13 0-21.5-8.5T488-770q0-13 8.5-21.5T518-800h69q24 0 40.5 11t24.5 33l76 207h38q81 0 137.5 56T960-357q0 81-56.5 139T766-160q-72 0-126-48t-66-120H384q-11 72-64.5 120T194-160Zm131-168v-60h-89q-13 0-21.5 8.5T206-358q0 13 8.5 21.5T236-328h89Zm174-60h76q4-23 15.5-51t31.5-50H463l36 101Zm191-81 33 86q5 11 15.5 16t22.5 1q12-4 17-15.5t1-22.5l-29-85-60 20Z"/></symbol><symbol id="i-billete" viewBox="0 -960 960 960"><path d="M481-120q-13 0-21.5-8.5T451-150v-54q-48-8-82-34t-53-66q-5-11 0-23t17-17q11-5 22.5 0t17.5 16q18 34 47 51t67 17q48 0 79-24t31-66q0-44-27.5-68T466-467q-72-23-107.5-61T323-623q0-55 35.5-92t92.5-42v-53q0-13 8.5-21.5T481-840q13 0 21.5 8.5T511-810v53q36 5 64.5 22t47.5 44q7 10 3 21.5T610-653q-11 5-23 1t-20-15q-14-18-34.5-26.5T483-702q-46 0-73 21t-27 57q0 38 30 61.5T524-514q68 21 100.5 60.5T657-354q0 63-37 101.5T511-203v53q0 13-8.5 21.5T481-120Z"/></symbol><symbol id="i-bolsa" viewBox="0 -960 960 960"><path d="M220-80q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h110v-10q0-63 43.5-106.5T480-880q63 0 106.5 43.5T630-730v10h110q24 0 42 18t18 42v520q0 24-18 42t-42 18H220Zm170-640h180v-10q0-38-26-64t-64-26q-38 0-64 26t-26 64v10Zm231.5 171.5Q630-557 630-570v-90h-60v90q0 13 8.5 21.5T600-540q13 0 21.5-8.5Zm-240 0Q390-557 390-570v-90h-60v90q0 13 8.5 21.5T360-540q13 0 21.5-8.5Z"/></symbol><symbol id="i-cafe" viewBox="0 -960 960 960"><path d="M190-120q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h580q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H190Zm121-140q-63 0-107-43.5T160-410v-370q0-24.75 17.63-42.38Q195.25-840 220-840h600q24.75 0 42.38 17.62Q880-804.75 880-780v160q0 24.75-17.62 42.37Q844.75-560 820-560h-96v150q0 63-44 106.5T573-260H311Zm413-360h96v-160h-96v160Z"/></symbol><symbol id="i-carrito" viewBox="0 -960 960 960"><path d="M236-102.21q-21-21.21-21-51T236.21-204q21.21-21 51-21T338-203.79q21 21.21 21 51T337.79-102q-21.21 21-51 21T236-102.21Zm400 0q-21-21.21-21-51T636.21-204q21.21-21 51-21T738-203.79q21 21.21 21 51T737.79-102q-21.21 21-51 21T636-102.21ZM205-801h589.07q22.97 0 34.95 21 11.98 21-.02 42L694-495q-11 19-28.56 30.5T627-453H324l-56 104h461q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H277q-42 0-60.5-28t.5-63l64-118-152-322H81q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32Q68.25-880 81-880h68q9 0 16.2 4.43 7.2 4.44 10.8 12.57l29 62Z"/></symbol><symbol id="i-casa" viewBox="0 -960 960 960"><path d="M160-180v-390q0-14.25 6.38-27 6.37-12.75 17.62-21l260-195q15.68-12 35.84-12Q500-825 516-813l260 195q11.25 8.25 17.63 21 6.37 12.75 6.37 27v390q0 24.75-17.62 42.37Q764.75-120 740-120H590q-12.75 0-21.37-8.63Q560-137.25 560-150v-220q0-12.75-8.62-21.38Q542.75-400 530-400H430q-12.75 0-21.37 8.62Q400-382.75 400-370v220q0 12.75-8.62 21.37Q382.75-120 370-120H220q-24.75 0-42.37-17.63Q160-155.25 160-180Z"/></symbol><symbol id="i-celular" viewBox="0 -960 960 960"><path d="M260-40q-25 0-42.5-17.5T200-100v-760q0-24 18-42t42-18h438q25 0 42.5 17.5T758-860v150q18 3 30 17t12 32v74q0 19-12 33t-30 17v437q0 25-17.5 42.5T698-40H260Zm219-680q12 0 21-9t9-21q0-12-9-21t-21-9q-12 0-21 9t-9 21q0 12 9 21t21 9Z"/></symbol><symbol id="i-cine" viewBox="0 -960 960 960"><path d="m140-800 58 119q8 15 22 24t31 9q32 0 49-27.5t3-56.5l-33-68h89l58 119q8 15 22 24t31 9q32 0 49-27.5t3-56.5l-33-68h89l58 119q8 15 22 24t31 9q32 0 49-27.5t3-56.5l-33-68h112q24 0 42 18t18 42v520q0 24-18 42t-42 18H140q-24 0-42-18t-18-42v-520q0-24 18-42t42-18Z"/></symbol><symbol id="i-cochera" viewBox="0 -960 960 960"><path d="M360-376v196q0 25-17.5 42.5T300-120q-25 0-42.5-17.5T240-180v-600q0-25 17.5-42.5T300-840h228q98 0 165 67t67 165q0 98-67 165t-165 67H360Zm0-120h168q48 0 80-32t32-80q0-48-32-80t-80-32H360v224Z"/></symbol><symbol id="i-colectivo" viewBox="0 -960 960 960"><path d="M302-202v39q0 17.92-12.56 30.46T258.94-120q-17.94 0-30.44-12.54T216-163v-68q-29-16-42.5-46T160-341v-397q0-73.66 76.5-107.83T481-880q166 0 242.5 34T800-738v397q0 34-13.5 64T744-231v68q0 17.92-12.56 30.46T700.94-120q-17.94 0-30.44-12.54T658-163v-39H302Zm-82-329h520v-173H220v173Zm145 202.94q16-16.06 16-39T364.94-406q-16.06-16-39-16T287-405.94q-16 16.06-16 39T287.06-328q16.06 16 39 16T365-328.06Zm308 0q16-16.06 16-39T672.94-406q-16.06-16-39-16T595-405.94q-16 16.06-16 39T595.06-328q16.06 16 39 16T673-328.06Z"/></symbol><symbol id="i-comida" viewBox="0 -960 960 960"><path d="M285-600v-250q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v250h65v-250q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v249.73q0 58.27-36.5 99.77Q397-459 345-448v338q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63Q285-97.25 285-110v-338q-52-11-88.5-52.5T160-600.27V-850q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v250h65Zm415 200h-85q-12.75 0-21.37-8.63Q585-417.25 585-430v-275q0-69 42.5-122t98.5-53q14 0 24 10.13T760-846v736q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63Q700-97.25 700-110v-290Z"/></symbol><symbol id="i-compu" viewBox="0 -960 960 960"><path d="M70-120q-13 0-21.5-8.5T40-150q0-13 8.5-21.5T70-180h820q13 0 21.5 8.5T920-150q0 13-8.5 21.5T890-120H70Zm70-120q-24 0-42-18t-18-42v-480q0-24 18-42t42-18h680q24 0 42 18t18 42v480q0 24-18 42t-42 18H140Z"/></symbol><symbol id="i-corazon" viewBox="0 -960 960 960"><path d="M458-144q-11-4-19-12l-53-49Q262-320 171-424.5T80-643q0-90 60.5-150.5T290-854q51 0 101 24.5t89 80.5q44-56 91-80.5t99-24.5q89 0 149.5 60.5T880-643q0 114-91 218.5T574-205l-53 49q-8 8-19 12t-22 4q-11 0-22-4Z"/></symbol><symbol id="i-dentista" viewBox="0 -960 960 960"><path d="M680-875q66 0 113 47t47 113q0 11-1.5 29.5T834-643l-55 403q-5 41-36 63.5T677-154q-21 0-41-9t-34-29L495-348q-2-3-6.5-5t-9.5-2q-2 0-16 9L359-195q-14 21-35 31t-43 10q-35 0-65.5-22.5T180-241l-54-402q-3-24-4.5-42.5T120-715q0-66 47-113t113-47q36 0 57.5 9.5T379-845q20 11 42.5 20.5T480-815q36 0 58.5-9.5T581-845q20-11 42-20.5t57-9.5Z"/></symbol><symbol id="i-ducha" viewBox="0 -960 960 960"><path d="M298-263q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Zm182 0q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Zm182 0q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9ZM230-413q-13 0-21.5-8.5T200-443v-30q0-107 72.5-187T450-751v-59q0-13 8.5-21.5T480-840q13 0 21.5 8.5T510-810v59q105 11 177.5 91T760-473v30q0 13-8.5 21.5T730-413H230Zm68 293q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Zm182 0q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Zm182 0q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Z"/></symbol><symbol id="i-educacion" viewBox="0 -960 960 960"><path d="M860-313v-252L508-375q-14 8-29 7.5t-29-8.5L88-574q-8-5-11.5-11.5T73-600q0-8 3.5-14.5T88-626l362-198q7-4 14-6t15-2q8 0 15 2t14 6l396 215q8 4 12 11.5t4 15.5v269q0 13-8.5 21.5T890-283q-13 0-21.5-8.5T860-313ZM450-136 220-262q-14-8-22.5-22t-8.5-31v-174l261 143q14 8 29 8t29-8l261-143v174q0 17-8.5 31T738-262L508-136q-7 4-14 6t-15 2q-8 0-15-2t-14-6Z"/></symbol><symbol id="i-estrella" viewBox="0 -960 960 960"><path d="M480-269 294-157q-8 5-17 4.5t-16-5.5q-7-5-10.5-13t-1.5-18l49-212-164-143q-8-7-9.5-15.5t.5-16.5q2-8 9-13.5t17-6.5l217-19 84-200q4-9 12-13.5t16-4.5q8 0 16 4.5t12 13.5l84 200 217 19q10 1 17 6.5t9 13.5q2 8 .5 16.5T826-544L662-401l49 212q2 10-1.5 18T699-158q-7 5-16 5.5t-17-4.5L480-269Z"/></symbol><symbol id="i-etiqueta" viewBox="0 -960 960 960"><path d="M863-404 557-97q-9 8.5-20.25 12.75T514.25-80Q503-80 492-84.5T472-97L98-472q-8-8-13-18.96-5-10.95-5-23.04v-306q0-24.75 17.63-42.38Q115.25-880 140-880h307q12.07 0 23.39 4.87Q481.7-870.25 490-862l373 373q9.39 9 13.7 20.25 4.3 11.25 4.3 22.5t-4.5 22.75Q872-412 863-404ZM245-664q21 0 36.5-15.5T297-716q0-21-15.5-36.5T245-768q-21 0-36.5 15.5T193-716q0 21 15.5 36.5T245-664Z"/></symbol><symbol id="i-factura" viewBox="0 -960 960 960"><path d="M222-80q-43.75 0-74.37-30.63Q117-141.25 117-185v-95q0-12.75 8.63-21.38Q134.25-310 147-310h97v-552q0-5.25 4.5-7.13Q253-871 257-867l36 36q4.64 5 10.82 5 6.18 0 11.18-5l38-38q4.64-5 10.82-5 6.18 0 11.18 5l37 38q4.64 5 10.82 5 6.18 0 11.18-5l38-38q4.64-5 10.82-5 6.18 0 11.18 5l38 38q4.64 5 10.82 5 6.18 0 11.18-5l38-38q4.64-5 10.82-5 6.18 0 11.18 5l38 38q4.64 5 10.82 5 6.18 0 11.18-5l38-38q4.64-5 10.82-5 6.18 0 11.18 5l38 38q4.64 5 10.82 5 6.18 0 11.18-5l36-36q4-4 8.5-2.13 4.5 1.88 4.5 7.13v677q0 43.75-30.62 74.37Q781.75-80 738-80H222Zm514.5-60q19.5 0 31.5-12.5t12-32.5v-611H307v536h360q12.75 0 21.38 8.62Q697-242.75 697-230v45q0 20 10 32.5t29.5 12.5ZM390-702h180q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H390q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5Zm0 134h180q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H390q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5Zm303-74q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Zm0 129q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Z"/></symbol><symbol id="i-farmacia" viewBox="0 -960 960 960"><path d="M440-380v80q0 16.67 11.74 28.33Q463.47-260 480.24-260q16.76 0 28.26-11.67Q520-283.33 520-300v-80h80q16.67 0 28.33-11.74Q640-403.47 640-420.24q0-16.76-11.67-28.26Q616.67-460 600-460h-80v-80q0-16.67-11.74-28.33Q496.53-580 479.76-580q-16.76 0-28.26 11.67Q440-556.67 440-540v80h-80q-16.67 0-28.33 11.74Q320-436.53 320-419.76q0 16.76 11.67 28.26Q343.33-380 360-380h80ZM260-120q-24.75 0-42.37-17.63Q200-155.25 200-180v-479q0-24.75 17.63-42.38Q235.25-719 260-719h440q24.75 0 42.38 17.62Q760-683.75 760-659v479q0 24.75-17.62 42.37Q724.75-120 700-120H260Zm10-660q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h420q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H270Z"/></symbol><symbol id="i-flores" viewBox="0 -960 960 960"><path d="M480-570q34 0 57-24t23-56q0-34-23-57t-57-23q-32 0-56 23t-24 57q0 32 24 56t56 24Zm-65.5 168.5Q385-423 371-458q-6 0-12.5.5t-12.5.5q-48 0-82-34t-34-82q0-20 8-39.5t23-37.5q-14-18-22-37.5t-8-39.5q0-48 33.5-82t81.5-34q6 0 12.5.5t12.5.5q14-35 43.5-56.5T480-920q36 0 65.5 21.5T589-842q6 0 12.5-.5t12.5-.5q48 0 81.5 34t33.5 82q0 20-7.5 39.5T699-650q14 18 22 37.5t8 39.5q0 48-33.5 82T614-457q-6 0-12.5-.5T589-458q-14 35-43.5 56.5T480-380q-36 0-65.5-21.5ZM480-80q0-123 85.5-225T770-432q14-3 27.5-.5T820-419q10 11 12 24.5t-1 27.5q-26 118-128 202.5T480-80Zm0 0q0-123-85.5-225T190-432q-14-3-27.5-.5T140-419q-10 11-12 25t1 28q26 118 128 202t223 84Z"/></symbol><symbol id="i-gimnasio" viewBox="0 -960 960 960"><path d="M268-650 147-529q-9 9-21 9t-21-9q-8-8-8.5-20.5T104-571l36-37-35-35q-9-9-9-21t9-21l64-64-21-21q-9-9-9-21t9-21q8-8 20.5-8.5T190-813l22 21 63-63q9-9 21-9t21 9l35 35 37-36q9-8 21-8t21 9q9 9 9 21t-9 21L310-692l382 382 121-121q9-9 21-9t21 9q8 8 8.5 20.5T856-389l-36 37 35 35q9 9 9 21t-9 21l-65 65 21 21q9 9 9 21t-9 21q-9 9-21 9t-21-9l-21-21-63 63q-9 9-21 9t-21-9l-35-35-37 36q-9 8-21 8t-21-9q-9-9-9-21t9-21l121-121-382-382Z"/></symbol><symbol id="i-grafico" viewBox="0 -960 960 960"><path d="M102-252q-9-9-9-21.5t9-21.5l228-227q16.93-17 41.97-17Q397-539 414-522l125 125 241-241h-97q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h167q12.75 0 21.38 8.62Q880-680.75 880-668v167q0 12-8.27 21t-20.5 9Q839-471 830-480t-9-21v-93L580-354q-16.93 17-41.97 17Q513-337 496-354L371-478 145-252q-9 9-21.5 9t-21.5-9Z"/></symbol><symbol id="i-herramienta" viewBox="0 -960 960 960"><path d="M753-82q-5-2-10-7L501-331q-5-5-7-10t-2-11q0-6 2-11t7-10l85-85q5-5 10-7t11-2q6 0 11 2t10 7l242 242q5 5 7 10t2 11q0 6-2 11t-7 10l-85 85q-5 5-10 7t-11 2q-6 0-11-2Zm-569.5 0q-5.5-2-10.5-7l-84-84q-5-5-7-10.5T80-195q0-6 2-11t7-10l225-225h85l38-38-175-175h-57L80-779l99-99 125 125v57l175 175 130-130-67-67 56-56H485l-18-18 128-128 18 18v113l56-56 169 169q15 15 23.5 34.5T870-600q0 20-6.5 38.5T845-528l-85-85-56 56-52-52-211 211v84L216-89q-5 5-10 7t-11 2q-6 0-11.5-2Z"/></symbol><symbol id="i-hotel" viewBox="0 -960 960 960"><path d="M69.82-200Q57-200 48.5-208.63 40-217.25 40-230v-525q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v364h353v-249q0-24.75 17.63-42.38Q488.25-700 513-700h262q59.81 0 102.41 42.59Q920-614.81 920-555v325q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37v-101H100v101q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63ZM194.5-479.5Q164-510 164-555t30.5-75.5Q225-661 270-661t75.5 30.5Q376-600 376-555t-30.5 75.5Q315-449 270-449t-75.5-30.5Z"/></symbol><symbol id="i-impuesto" viewBox="0 -960 960 960"><path d="M180-120q-23 0-41.5-18T120-180v-600q0-23 18.5-41.5T180-840h600q24 0 42 18.5t18 41.5v54H538q-58 0-96 38t-38 95v227q0 57 38 95t96 38h302v53q0 24-18 42t-42 18H180Zm358-173q-34 0-54-20t-20-53v-227q0-34 20-53.5t54-19.5h269q34 0 54 19.5t20 53.5v227q0 33-20 53t-54 20H538Zm158.5-142.5Q716-455 716-481q0-25-19.5-44T652-544q-25 0-44.5 19T588-481q0 26 19.5 45.5T652-416q25 0 44.5-19.5Z"/></symbol><symbol id="i-internet" viewBox="0 -960 960 960"><path d="M417-154q-27-27-27-63t27-63q27-27 63-27t63 27q27 27 27 63t-27 63q-27 27-63 27t-63-27Zm209-378.5Q694-505 757-451q14 12 15 30.5T759-388q-14 14-32 13t-33-13q-53-44-106.5-63T480-470q-54 0-107.5 19T266-388q-15 12-33 13t-32-13q-14-14-13-32.5t15-30.5q63-54 131-81.5T480-560q78 0 146 27.5Zm95.5-219Q835-703 926-622q14 13 15.5 31.5T929-558q-14 14-33.5 13.5T861-558q-83-70-178-111t-203-41q-108 0-203 41T99-558q-15 13-34 13.5T32-558q-14-14-13-32.5T34-622q91-81 204.5-129.5T480-800q128 0 241.5 48.5Z"/></symbol><symbol id="i-juego" viewBox="0 -960 960 960"><path d="M147-200q-38 0-59.5-25.5T72-296l48-335q8-53 49.5-91t94.5-38h433q53 0 94.5 38t49.5 91l47 335q6 45-15.5 70.5T813-200q-23 0-39-7.5T747-226L643-330H317L213-226q-11 11-27 18.5t-39 7.5Zm581-252q12-12 12-28t-12-28q-12-12-28-12t-28 12q-12 12-12 28t12 28q12 12 28 12t28-12Zm-85-130q12-12 12-28t-12-28q-12-12-28-12t-28 12q-12 12-12 28t12 28q12 12 28 12t28-12Zm-343 62v50q0 11 7 18t18 7q11 0 18-7t7-18v-50h50q11 0 18-7t7-18q0-11-7-18t-18-7h-50v-50q0-11-7-18t-18-7q-11 0-18 7t-7 18v50h-50q-11 0-18 7t-7 18q0 11 7 18t18 7h50Z"/></symbol><symbol id="i-juguete" viewBox="0 -960 960 960"><path d="M276-160q-45 0-79.5-33.5T159-275q-37-23-57.5-58.5T81-411q0-52 30.5-93.5T192-557l-81-85-19 20q-9 10-21.5 10T49-622q-9-9-9-21t9-22l81-84q9-9 21.5-9t21.5 9q9 10 9 22t-9 21l-19 21 72 77 39-117q11-33 38.5-54t61.5-21h232q34 0 62 21t38 54l50 166q57 5 95 46.5T880-411q0 42-20.5 77.5T802-275q-3 48-37.5 81.5T685-160q-42 0-73.5-29T572-260H389q-8 42-39.5 71T276-160Zm-2-401h175v-179h-84q-15 0-26 9.5T323-707l-49 146Zm235 0h175l-45-146q-5-14-16-23.5t-26-9.5h-88v179ZM319-237q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm409 0q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Z"/></symbol><symbol id="i-libro" viewBox="0 -960 960 960"><path d="M512-250q50-25 98-37.5T712-300q38 0 78.5 6t69.5 16v-429q-34-17-72-25t-76-8q-54 0-104.5 16.5T512-677v427Zm-44.5 77.5Q461-174 456-178q-47-29-100-45t-108-16q-37 0-72 9t-70 22q-23 11-44.5-3T40-251v-463q0-15 7-27.5T68-761q42-20 87.5-29.5T248-800q63 0 122.5 17T482-731q51-35 109.5-52T712-800q47 0 92 9.5t87 29.5q14 7 21.5 19.5T920-714v463q0 28-22.5 42.5t-44.5.5q-34-14-69-22.5t-72-8.5q-54 0-106 16t-98 45q-5 4-11.5 5.5T482-171q-8 0-14.5-1.5ZM560-608q0-6 4-11.5t9-7.5q30-11 61.5-17t65.5-6q22 0 43 2.5t41 7.5q6 2 11 7.5t5 12.5q0 11-7.5 17t-18.5 3q-17-5-35.5-7.5T700-610q-29 0-56 5.5T591-588q-14 5-22.5-.5T560-608Zm0 220q0-6 4-12t9-8q30-11 61.5-16.5T700-430q22 0 43 2.5t41 7.5q6 2 11 7.5t5 12.5q0 11-7.5 17t-18.5 3q-17-5-35.5-7.5T700-390q-29 0-56 5t-53 16q-14 5-22.5 0t-8.5-19Zm0-110q0-6 4-11.5t9-7.5q30-11 61.5-17t65.5-6q22 0 43 2.5t41 7.5q6 2 11 7.5t5 12.5q0 11-7.5 17t-18.5 3q-17-5-35.5-7.5T700-500q-29 0-56 5.5T591-478q-14 5-22.5-.5T560-498Z"/></symbol><symbol id="i-luz" viewBox="0 -960 960 960"><path d="M360-360H217q-18 0-26.5-16t2.5-31l338-488q8-11 20-15t24 1q12 5 19 16t5 24l-39 309h176q19 0 27 17t-4 32L388-66q-8 10-20.5 13T344-55q-11-5-17.5-16T322-95l38-265Z"/></symbol><symbol id="i-mascota" viewBox="0 -960 960 960"><path d="M169.86-485Q132-485 106-511.14t-26-64Q80-613 106.14-639t64-26Q208-665 234-638.86t26 64Q260-537 233.86-511t-64 26ZM291-681.14q-26-26.14-26-64T291.14-809q26.14-26 64-26T419-808.86q26 26.14 26 64T418.86-681q-26.14 26-64 26T291-681.14Zm250 0q-26-26.14-26-64T541.14-809q26.14-26 64-26T669-808.86q26 26.14 26 64T668.86-681q-26.14 26-64 26T541-681.14ZM789.86-485Q752-485 726-511.14t-26-64Q700-613 726.14-639t64-26Q828-665 854-638.86t26 64Q880-537 853.86-511t-64 26ZM266-75q-42 0-69-31.53-27-31.52-27-74.47 0-42 25.5-74.5T250-318q22-22 41-46.5t36-50.5q29-44 65-82t88-38q52 0 88.5 38t65.5 83q17 26 35.5 50t40.5 46q29 30 54.5 62.5T790-181q0 42.95-27 74.47Q736-75 694-75q-54 0-107-9t-107-9q-54 0-107 9t-107 9Z"/></symbol><symbol id="i-medico" viewBox="0 -960 960 960"><path d="M140-80q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h180v-100q0-24 18-42t42-18h200q24 0 42 18t18 42v100h180q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Zm240-640h200v-100H380v100Zm70 350v90q0 12.75 8.68 21.37 8.67 8.63 21.5 8.63 12.82 0 21.32-8.63 8.5-8.62 8.5-21.37v-90h90q12.75 0 21.38-8.68 8.62-8.67 8.62-21.5 0-12.82-8.62-21.32-8.63-8.5-21.38-8.5h-90v-90q0-12.75-8.68-21.38-8.67-8.62-21.5-8.62-12.82 0-21.32 8.62-8.5 8.63-8.5 21.38v90h-90q-12.75 0-21.37 8.68-8.63 8.67-8.63 21.5 0 12.82 8.63 21.32 8.62 8.5 21.37 8.5h90Z"/></symbol><symbol id="i-mueble" viewBox="0 -960 960 960"><path d="M193-119q-13 0-21.5-8.5T163-149v-43h-19q-45 0-74.5-32.5T40-302v-242q0-31 20.5-53.5T111-620q30 0 50.5 22.5T182-544v173h596v-173q0-31 20.5-53.5T849-620q30 0 50.5 22.5T920-544v242q0 45-29.5 77.5T817-192h-20v43q0 13-8.5 21.5T767-119q-13 0-21.5-8.5T737-149v-43H223v43q0 13-8.5 21.5T193-119Zm49-312v-113q0-48-26.5-85.5T144-677v-60q0-42 28-72.5t70-30.5h476q42 0 70.5 30.5T817-737v60q-45 11-72 48.5T718-544v113H242Z"/></symbol><symbol id="i-musica" viewBox="0 -960 960 960"><path d="M286.5-163.5Q243-207 243-270t43.5-106.5Q330-420 393-420q28 0 50.5 8t39.5 22v-420q0-13 8.5-21.5T513-840h174q13 0 21.5 8.5T717-810v75q0 13-8.5 21.5T687-705H543v435q0 63-43.5 106.5T393-120q-63 0-106.5-43.5Z"/></symbol><symbol id="i-nafta" viewBox="0 -960 960 960"><path d="M160-150v-630q0-24 18-42t42-18h269q24 0 42 18t18 42v288h65q20.63 0 35.31 14.69Q664-462.63 664-442v219q0 21.68 15.5 36.34Q695-172 717-172t37.5-14.66Q770-201.32 770-223v-295q-11 6-23 9t-24 3q-39.48 0-66.74-27.26Q629-560.52 629-600q0-31.61 18-56.81Q665-682 695-690l-77-77q-8-7.64-8-17.82t8-18.18q8-8 18-7.5t18 8.5l135 135q14 14 22.5 30.5T820-600v377q0 43.26-29.82 73.13-29.81 29.87-73 29.87Q674-120 644-149.87q-30-29.87-30-73.13v-219h-65v292q0 12.75-8.62 21.37Q531.75-120 519-120H190q-12.75 0-21.37-8.63Q160-137.25 160-150Zm60-402h269v-228H220v228Zm503-4q18 0 31-13t13-31q0-18-13-31t-31-13q-18 0-31 13t-13 31q0 18 13 31t31 13Z"/></symbol><symbol id="i-ninos" viewBox="0 -960 960 960"><path d="M616-515q13-13 13-32t-13-32q-13-13-32-13t-32 13q-13 13-13 32t13 32q13 13 32 13t32-13Zm-209 0q13-13 13-32t-13-32q-13-13-32-13t-32 13q-13 13-13 32t13 32q13 13 32 13t32-13Zm174 200q47-29 73-80H306q26 51 73 80t101 29q54 0 101-29ZM340.5-148.5Q275-177 226-226t-77.5-114.5Q120-406 120-480t28.5-139.5Q177-685 226-734t114.5-77.5Q406-840 480-840t139.5 28.5Q685-783 734-734t77.5 114.5Q840-554 840-480t-28.5 139.5Q783-275 734-226t-114.5 77.5Q554-120 480-120t-139.5-28.5ZM495-638q29 0 44-8.5t15-24.5q0-9-6.5-14.5T530-691q-7 0-15 1.5t-20 1.5q-25 0-41.5-16.5T437-746q0-10 1.5-20.5T442-784q-14 2-26 4.5t-26 7.5q-2 5-2.5 12.5T387-746q0 46 31 77t77 31Z"/></symbol><symbol id="i-nota" viewBox="0 -960 960 960"><path d="M349-250h262q13 0 21.5-8.5T641-280q0-13-8.5-21.5T611-310H349q-13 0-21.5 8.5T319-280q0 13 8.5 21.5T349-250Zm0-170h262q13 0 21.5-8.5T641-450q0-13-8.5-21.5T611-480H349q-13 0-21.5 8.5T319-450q0 13 8.5 21.5T349-420ZM220-80q-24 0-42-18t-18-42v-680q0-24 18-42t42-18h336q12 0 23.5 5t19.5 13l183 183q8 8 13 19.5t5 23.5v496q0 24-18 42t-42 18H220Zm331-584q0 13 8.5 21.5T581-634h159L551-820v156Z"/></symbol><symbol id="i-peluqueria" viewBox="0 -960 960 960"><path d="M481-415 364-298q11 17 13.5 33t2.5 35q0 64-43 107T230-80q-64 0-107-43T80-230q0-64 43-107t107-43q18 0 35.5 5t36.5 15l116-116-118-118q-17 8-34.5 11t-35.5 3q-64 0-107-43T80-730q0-64 43-107t107-43q64 0 107 43t43 107q0 19-2.5 36T367-662l468 468q23 23 10.5 51.5T801-114q-9 0-17.5-3.5T768-128L481-415Zm118-112-66-66 235-235q7-7 15.5-10.5T801-842q32 0 43.5 29T834-762L599-527ZM294-666q26-26 26-64t-26-64q-26-26-64-26t-64 26q-26 26-26 64t26 64q26 26 64 26t64-26Zm202.5 203.5Q502-468 502-476t-5.5-13.5Q491-495 483-495t-13.5 5.5Q464-484 464-476t5.5 13.5Q475-457 483-457t13.5-5.5ZM294-166q26-26 26-64t-26-64q-26-26-64-26t-64 26q-26 26-26 64t26 64q26 26 64 26t64-26Z"/></symbol><symbol id="i-persona" viewBox="0 -960 960 960"><path d="M372-523q-42-42-42-108t42-108q42-42 108-42t108 42q42 42 42 108t-42 108q-42 42-108 42t-108-42ZM160-220v-34q0-38 19-65t49-41q67-30 128.5-45T480-420q62 0 123 15.5T731-360q31 14 50 41t19 65v34q0 25-17.5 42.5T740-160H220q-25 0-42.5-17.5T160-220Z"/></symbol><symbol id="i-pizza" viewBox="0 -960 960 960"><path d="M480-840q97 0 187 32t167 89q12 9 18.5 21.95t6.5 26.67q0 8.38-2.5 16.84-2.5 8.45-7.5 16.54L530-156q-9 13.5-22.5 20.25T479.88-129q-14.12 0-27.5-6.5T430-156L111-637q-5.38-8.25-7.69-16.5Q101-661.75 101-670q0-13.85 6.5-26.92Q114-710 126-719q77-57 167-89t187-32Zm-71 258.94q16-16.06 16-39T408.94-659q-16.06-16-39-16T331-658.94q-16 16.06-16 39T331.06-581q16.06 16 39 16T409-581.06Zm110 215q16-16.06 16-39T518.94-444q-16.06-16-39-16T441-443.94q-16 16.06-16 39T441.06-366q16.06 16 39 16T519-366.06Z"/></symbol><symbol id="i-playa" viewBox="0 -960 960 960"><path d="M772-151 555-368q-10-10-10-23t10-23q10-10 23-10t23 10l217 217q10 10 10 23t-10 23q-10 10-23 10t-23-10Zm-519-51q-12 12-27.5 11T200-205q-70-95-78.5-210.5T166-633q2 33 14.5 73.5T216-475q23 44 55 91t72 92l-90 90Zm131-131q-49-50-85-106.5t-54.5-109Q226-601 226-645t22-68q24-26 69.5-27T418-723q55 18 113 53.5T636-585L384-333Zm380-436q13 10 14 25.5T767-716l-90 90q-44-40-90.5-72t-92-54.5Q449-775 407-787t-76-13q103-55 220-47.5T764-769Z"/></symbol><symbol id="i-regalo" viewBox="0 -960 960 960"><path d="M140-277v97h680v-97H140Zm0-443h125q-5-9-8-22.5t-3-24.5q0-47 33-80t79-33q31 0 57 15.5t41 39.5l16 26 17-26q16-25 41-40t54-15q48 0 81 32.5t33 80.5q0 11-2.5 22t-7.5 25h124q24 0 42 18t18 42v480q0 24-18 42t-42 18H140q-24 0-42-18t-18-42v-480q0-24 18-42t42-18Zm0 336h680v-276H571l83 115q8 10 5.5 22T647-503q-10 8-22 6t-20-13L480-683 355-510q-8 11-19.5 13t-22.5-6q-10-8-12.5-20t5.5-22l83-115H140v276Zm264.5-345.5Q420-745 420-767t-15.5-37.5Q389-820 367-820t-37.5 15.5Q314-789 314-767t15.5 37.5Q345-714 367-714t37.5-15.5ZM592-714q23 0 38.5-15.5T646-767q0-22-15.5-37.5T592-820q-21 0-36.5 15.5T540-767q0 22 15.5 37.5T592-714Z"/></symbol><symbol id="i-reloj" viewBox="0 -960 960 960"><path d="M513-492v-171q0-13-8.5-21.5T483-693q-13 0-21.5 8.5T453-663v183q0 6 2 11t6 10l144 149q9 10 22.5 9.5T650-310q9-9 9-22t-9-22L513-492ZM480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-82 31.5-155t86-127.5Q252-817 325-848.5T480-880q82 0 155 31.5t127.5 86Q817-708 848.5-635T880-480q0 82-31.5 155t-86 127.5Q708-143 635-111.5T480-80Z"/></symbol><symbol id="i-ropa" viewBox="0 -960 960 960"><path d="M200-220h560L480-443 200-220Zm206-472q-3 8-10 13.5t-17 5.5q-13 0-21.5-8.5T349-703v-6q0-3 2-6 17-38 52-61.5t77-23.5q58 0 99 40.5t41 98.5q0 49-31 86.5T510-523v28l358 281q6 5 9 11t3 13q0 13-8.5 21.5T850-160H110q-13 0-21.5-8.5T80-190q0-7 3-13t9-11l358-281v-55q0-12 8.5-21t20.5-9q34 0 57.5-23.5T560-661q0-33-23.5-56T480-740q-24 0-44 13t-30 35Z"/></symbol><symbol id="i-salud" viewBox="0 -960 960 960"><path d="M435-435v111q0 18.75 13.18 31.87 13.17 13.13 32 13.13Q499-279 512-292.13q13-13.12 13-31.87v-111h111q18.75 0 31.88-13.18 13.12-13.17 13.12-32Q681-499 667.88-512q-13.13-13-31.88-13H525v-111q0-18.75-13.18-31.88-13.17-13.12-32-13.12Q461-681 448-667.88q-13 13.13-13 31.88v111H324q-18.75 0-31.87 13.18-13.13 13.17-13.13 32Q279-461 292.13-448q13.12 13 31.87 13h111ZM180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Z"/></symbol><symbol id="i-seguro" viewBox="0 -960 960 960"><path d="M470.5-85q-4.5-1-9.5-3-139-47-220-168.5T160-523v-196q0-19 11-34.5t28-22.5l260-97q11-4 21-4t21 4l260 97q17 7 28 22.5t11 34.5v196q0 145-81 266.5T499-88q-5 2-9.5 3t-9.5 1q-5 0-9.5-1Z"/></symbol><symbol id="i-spa" viewBox="0 -960 960 960"><path d="M431-89q-135-32-232.5-134T83-499q-1-11 2-19.5T95-533q7-6 16-9.5t19-1.5q177 24 266.5 140T483-130q0 11-4 19t-12 14q-7 5-16 7.5t-20 .5Zm48-297q-22-38-60.5-82.5T337-530q2-64 35-152t78-157q6-9 14-13t16-4q8 0 16.5 4t13.5 13q46 69 78.5 157.5T623-530q-42 17-82.5 61.5T479-386Zm62 294q5-57-2.5-119.5T513-322q35-78 114.5-141T830-544q11-2 19.5 1.5T865-533q7 6 10.5 14.5T877-499q-17 171-112 271T541-92Z"/></symbol><symbol id="i-sueldo" viewBox="0 -960 960 960"><path d="M100-160q-24.75 0-42.37-17.63Q40-195.25 40-220v-430q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v430h670q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H100Zm120-120q-24.75 0-42.37-17.63Q160-315.25 160-340v-400q0-24.75 17.63-42.38Q195.25-800 220-800h640q24.75 0 42.38 17.62Q920-764.75 920-740v400q0 24.75-17.62 42.37Q884.75-280 860-280H220Zm100-60q0-42-29-71t-71-29v100h100Zm440 0h100v-100q-42 0-71 29t-29 71Zm-220-80q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM220-640q42 0 71-29t29-71H220v100Zm640 0v-100H760q0 42 29 71t71 29Z"/></symbol><symbol id="i-supermercado" viewBox="0 -960 960 960"><path d="M179-120q-24 0-42-18t-18-42v-339q-28-24-37-59t2-70l43-135q8-27 28-42t46-15h553q28 0 49 15.5t29 41.5l44 135q11 35 1.5 70T840-519v339q0 24-18 42t-42 18H179Zm391-430q29 0 49-19t16-46l-25-165H510v165q0 26 17 45.5t43 19.5Zm-187 0q28 0 47.5-19t19.5-46v-165H350l-25 165q-4 26 14 45.5t44 19.5Zm-182 0q24 0 41.5-16.5T263-607l26-173H189l-46 146q-10 31 8 57.5t50 26.5Zm557 0q32 0 50.5-26t8.5-58l-46-146H671l26 173q3 24 20.5 40.5T758-550Z"/></symbol><symbol id="i-tarjeta" viewBox="0 -960 960 960"><path d="M140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Zm0-342h680v-129H140v129Z"/></symbol><symbol id="i-telefono" viewBox="0 -960 960 960"><path d="M795-120q-116 0-236.5-56T335-335Q232-438 176-558.5T120-795q0-19 13-32t32-13h140q14 0 24 10t14 25l27 126q2 14-.5 25.5T359-634L259-533q26 44 55 82t64 72q37 38 78 69.5t86 55.5l95-98q10-11 23-15t26-2l119 26q15 4 25 16t10 27v135q0 19-13 32t-32 13Z"/></symbol><symbol id="i-torta" viewBox="0 -960 960 960"><path d="M160-80q-17 0-28.5-11.5T120-120v-219q0-24.75 17.63-42.38Q155.25-399 180-399h600q24.75 0 42.38 17.62Q840-363.75 840-339v219q0 17-11.5 28.5T800-80H160Zm47-379v-122q0-24.75 17.63-42.38Q242.25-641 267-641h183v-64q-20-14-30.5-30.53-10.5-16.54-10.5-39.88 0-14.59 5.5-28.09T430-827l39-41q1-1 11.29-5 1.71 0 10.71 5l39 41q10 10 16 23.5t6 28.09q0 23.34-11 39.88Q530-719 510-705v64h183q24.75 0 42.38 17.62Q753-605.75 753-581v122H207Z"/></symbol><symbol id="i-trabajo" viewBox="0 -960 960 960"><path d="M140-120q-24 0-42-18t-18-42v-480q0-24 18-42t42-18h180v-100q0-24 18-42t42-18h200q24 0 42 18t18 42v100h180q24 0 42 18t18 42v480q0 24-18 42t-42 18H140Zm240-600h200v-100H380v100Z"/></symbol><symbol id="i-trago" viewBox="0 -960 960 960"><path d="M450-180v-244L134-764q-6-6-9-14.5t-3-16.5q0-19 13-32t32-13h626q19 0 32 13t13 32q0 8-3 16.5t-9 14.5L510-424v244h180q13 0 21.5 8.5T720-150q0 13-8.5 21.5T690-120H270q-13 0-21.5-8.5T240-150q0-13 8.5-21.5T270-180h180ZM281-695h398l83-81H198l83 81Z"/></symbol><symbol id="i-transferencia" viewBox="0 -960 960 960"><path d="m194-323 100 100q9 9 9 21t-9 21q-9 9-21 9t-21-9L101-332q-5-5-7-10t-2-11q0-6 2-11t7-10l151-151q9-9 21-9t21 9q9 9 9 21t-9 21L194-383h286q13 0 21.5 8.5T510-353q0 13-8.5 21.5T480-323H194Zm572-254H480q-13 0-21.5-8.5T450-607q0-13 8.5-21.5T480-637h286L666-737q-9-9-9-21t9-21q9-9 21-9t21 9l151 151q5 5 7 10t2 11q0 6-2 11t-7 10L708-435q-9 9-21 9t-21-9q-9-9-9-21t9-21l100-100Z"/></symbol><symbol id="i-tren" viewBox="0 -960 960 960"><path d="M160-340v-380q0-41 19-71.5t58.5-50q39.5-19.5 100-29T480-880q86 0 146.5 9t99 28.5Q764-823 782-793t18 73v380q0 59-40.5 99.5T660-200l26 26q15 15 7 34.5T663-120q-6 0-11.5-2t-10.5-7l-71-71H390l-71 71q-5 5-10.5 7t-11.5 2q-21 0-29.5-19.5T274-174l26-26q-59 0-99.5-40.5T160-340Zm60-205h234v-155H220v155Zm294 0h226v-155H514v155ZM374-331q16-16 16-39t-16-39q-16-16-39-16t-39 16q-16 16-16 39t16 39q16 16 39 16t39-16Zm290 0q16-16 16-39t-16-39q-16-16-39-16t-39 16q-16 16-16 39t16 39q16 16 39 16t39-16Z"/></symbol><symbol id="i-vino" viewBox="0 -960 960 960"><path d="M450-180v-185q-99-14-154.5-79.7Q240-510.41 240-600v-210q0-12.75 8.63-21.38Q257.25-840 270-840h420q12.75 0 21.38 8.62Q720-822.75 720-810v210q0 89.59-55.5 155.3Q609-379 510-365v185h100q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H350q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h100ZM300-630h360v-150H300v150Z"/></symbol></svg>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="i-agua" viewBox="0 -960 960 960"><path d="M251.5-174Q160-268 160-408q0-64 29-127t72.5-121q43.5-58 94-108.5T450-854q7-6 14.5-8.5T480-865q8 0 15.5 2.5T510-854q44 39 94.5 89.5t94 108.5Q742-598 771-535t29 127q0 140-91.5 234T480-80q-137 0-228.5-94ZM479-208q16 0 24.5-5.5T512-230q0-11-8.5-17t-25.5-6q-42 0-85.5-26.5T337-373q-2-9-9-14.5t-15-5.5q-11 0-17 8.5t-4 17.5q15 84 71 121.5T479-208Z"/></symbol><symbol id="i-ahorro" viewBox="0 -960 960 960"><path d="M230-120q-21 0-39.49-13.96Q172.02-147.93 166-168q-25-86-41.54-148.46-16.54-62.46-26.37-109.68-9.82-47.22-13.95-83.79Q80-546.49 80-580q0-92 64-156t156-64h200q27-36 68.5-58t91.5-22q25 0 42.5 17.5T720-820q0 6-1.5 12t-3.5 11q-4 11-7.5 22t-5.5 24l91 91h57q12.75 0 21.38 8.62Q880-642.75 880-630v227q0 10.24-5.5 18.12Q869-377 859-374l-91.93 30.3L713-163q-6.03 19.61-21.84 31.31Q675.34-120 655-120H540q-24.75 0-42.37-17.63Q480-155.25 480-180v-20h-80v20q0 24.75-17.62 42.37Q364.75-120 340-120H230Zm438.5-411.5Q680-543 680-560t-11.5-28.5Q657-600 640-600t-28.5 11.5Q600-577 600-560t11.5 28.5Q623-520 640-520t28.5-11.5ZM490-620q12.75 0 21.38-8.68 8.62-8.67 8.62-21.5 0-12.82-8.62-21.32-8.63-8.5-21.38-8.5H350q-12.75 0-21.37 8.68-8.63 8.67-8.63 21.5 0 12.82 8.63 21.32 8.62 8.5 21.37 8.5h140Z"/></symbol><symbol id="i-anteojos" viewBox="0 -960 960 960"><path d="M268-340q35 0 63.5-21.5T373-418l15-44q21-59-6-108.5T302-620H139l21 183q5 42 35.5 69.5T268-340Zm424 0q42 0 72.5-28t35.5-70l21-182H659q-53 0-80 49.5T572-461l15 43q12 35 41 56.5t64 21.5Zm-423 60q-65 0-112.5-43T101-432L78-620h-8q-13 0-21.5-8.5T40-650q0-13 8.5-21.5T70-680h229q40 0 76.5 22.5T438-594h85q26-41 62.5-63.5T662-680h228q13 0 21.5 8.5T920-650q0 13-8.5 21.5T890-620h-8l-23 188q-8 66-55.5 109T691-280q-53 0-97-32t-64-86l-15-41q-3-9-5.5-20t-4.5-25h-50q-2 13-4.5 23.5T445-441l-15 42q-20 54-64 86.5T269-280Z"/></symbol><symbol id="i-arte" viewBox="0 -960 960 960"><path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-84 32-157t87.5-127q55.5-54 130-85T489-880q79 0 150 26.5T763.5-780q53.5 47 85 111.5T880-527q0 108-63 170.5T650-294h-75q-18 0-31 14t-13 31q0 20 14.5 38t14.5 43q0 26-24.5 57T480-80ZM282-469q15-15 15-35t-15-35q-15-15-35-15t-35 15q-15 15-15 35t15 35q15 15 35 15t35-15Zm126-170q15-15 15-35t-15-35q-15-15-35-15t-35 15q-15 15-15 35t15 35q15 15 35 15t35-15Zm214 0q15-15 15-35t-15-35q-15-15-35-15t-35 15q-15 15-15 35t15 35q15 15 35 15t35-15Zm131 170q15-15 15-35t-15-35q-15-15-35-15t-35 15q-15 15-15 35t15 35q15 15 35 15t35-15Z"/></symbol><symbol id="i-auto" viewBox="0 -960 960 960"><path d="M200-204v44q0 16.67-11.74 28.33Q176.53-120 159.76-120q-16.76 0-28.26-11.67Q120-143.33 120-160v-304q0-4.67.5-9.33.5-4.67 2.5-9.67l78-236q6-19 21.75-30T258-760h444q19.5 0 35.25 11T759-719l78 236q2 5 2.5 9.67.5 4.66.5 9.33v304q0 16.67-11.74 28.33Q816.53-120 799.76-120 783-120 771-131.96T759-161v-43H200Zm3-330h554l-55-166H258l-55 166Zm82.76 220q23.24 0 38.74-15.75Q340-345.5 340-368q0-23.33-15.75-39.67Q308.5-424 286-424q-23.33 0-39.67 16.26Q230-391.47 230-368.24q0 23.24 16.26 38.74 16.27 15.5 39.5 15.5ZM675-314q23.33 0 39.67-15.75Q731-345.5 731-368q0-23.33-16.26-39.67Q698.47-424 675.24-424q-23.24 0-38.74 16.26-15.5 16.27-15.5 39.5 0 23.24 15.75 38.74Q652.5-314 675-314Z"/></symbol><symbol id="i-avion" viewBox="0 -960 960 960"><path d="M409-421 137-311q-20 8-38.5-4T80-350v-18q0-11 5-19.5T98-402l311-219v-188q0-29 21-50t50-21q29 0 50 21t21 50v188l311 219q8 6 13 14.5t5 19.5v18q0 23-18.5 35t-38.5 4L551-421v172l109 76q7 5 11 12.5t4 15.5v19q0 17-13.5 27.5T631-93l-151-46-151 46q-17 5-30.5-5.5T285-126v-19q0-8 4-15.5t11-12.5l109-76v-172Z"/></symbol><symbol id="i-banco" viewBox="0 -960 960 960"><path d="M212-271v-279q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v279q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Zm242 0v-279q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v279q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37ZM110-121q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32Q97.25-181 110-181h740q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H110Zm578-150v-279q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v279q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Zm166-369H103q-9.58 0-16.29-6.71Q80-653.42 80-663v-17q0-6 3.5-11.5T92-700l358-204q14.17-8 30-8t30 8l357 203q6 4 9.5 10t3.5 13.5v10.23q0 11.59-7.47 19.43Q865.05-640 854-640Z"/></symbol><symbol id="i-basquet" viewBox="0 -960 960 960"><path d="M81-510q2-47 23-105t52-101q63 54 89 106t33 100H81Zm601 0q7-48 33-100t89-106q31 43 52 101t23 105H682ZM156-245q-31-43-52-100.5T81-450h197q-7 48-33 99.5T156-245Zm648 0q-63-54-89-105.5T682-450h197q-2 47-23 104.5T804-245ZM339-510q-8-61-37-121.5T196-762q43-42 106-76t148-41v369H339Zm171 0v-369q85 7 148.5 41T765-762q-77 70-106.5 130.5T621-510H510ZM450-81q-90-7-150.5-41.5T196-199q77-70 106-130t37-121h111v369Zm60 0v-369h111q8 61 37.5 121T765-199q-43 42-104 76.5T510-81Z"/></symbol><symbol id="i-bebe" viewBox="0 -960 960 960"><path d="M587.5-97.68q-17.5-17.67-17.5-42.5 0-24.82 17.68-42.32 17.67-17.5 42.5-17.5 24.82 0 42.32 17.68 17.5 17.67 17.5 42.5 0 24.82-17.68 42.32Q654.65-80 629.82-80 605-80 587.5-97.68ZM239.82-80Q215-80 197.5-97.68q-17.5-17.67-17.5-42.5 0-24.82 17.68-42.32 17.67-17.5 42.5-17.5 24.82 0 42.32 17.68 17.5 17.67 17.5 42.5 0 24.82-17.68 42.32Q264.65-80 239.82-80ZM281-260q-26 0-36.5-23t6.5-43l397-467q17-20 43.5-33.5T746-840q56 0 95 39t39 95v1q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.7-8.5-8.69-8.5-21.54v-.76q0-31-21.5-52.5T746-780q-16.89 0-29.95 8Q703-764 689-748l-29 33v395q0 24.75-17.62 42.37Q624.75-260 600-260H281Zm131-317L239-750q-11-10.51-8.5-24.26Q233-788 245-796q35-18 76.85-28 41.85-10 85.15-10 47 0 93.5 12.5T590-786L412-577Z"/></symbol><symbol id="i-bici" viewBox="0 -960 960 960"><path d="M194-160q-81 0-137.5-57T0-355q0-81 57-137.5T195-549q71 0 124.5 45.5T384-388h51l-82-232h-43q-13 0-21.5-8.5T280-650q0-13 8.5-21.5T310-680h128q13 0 21.5 8.5T468-650q0 13-8.5 21.5T438-620h-22l26 71h222l-71-191h-75q-13 0-21.5-8.5T488-770q0-13 8.5-21.5T518-800h69q24 0 40.5 11t24.5 33l76 207h38q81 0 137.5 56T960-357q0 81-56.5 139T766-160q-72 0-126-48t-66-120H384q-11 72-64.5 120T194-160Zm131-168v-60h-89q-13 0-21.5 8.5T206-358q0 13 8.5 21.5T236-328h89Zm174-60h76q4-23 15.5-51t31.5-50H463l36 101Zm191-81 33 86q5 11 15.5 16t22.5 1q12-4 17-15.5t1-22.5l-29-85-60 20Z"/></symbol><symbol id="i-billete" viewBox="0 -960 960 960"><path d="M481-120q-13 0-21.5-8.5T451-150v-54q-48-8-82-34t-53-66q-5-11 0-23t17-17q11-5 22.5 0t17.5 16q18 34 47 51t67 17q48 0 79-24t31-66q0-44-27.5-68T466-467q-72-23-107.5-61T323-623q0-55 35.5-92t92.5-42v-53q0-13 8.5-21.5T481-840q13 0 21.5 8.5T511-810v53q36 5 64.5 22t47.5 44q7 10 3 21.5T610-653q-11 5-23 1t-20-15q-14-18-34.5-26.5T483-702q-46 0-73 21t-27 57q0 38 30 61.5T524-514q68 21 100.5 60.5T657-354q0 63-37 101.5T511-203v53q0 13-8.5 21.5T481-120Z"/></symbol><symbol id="i-bolsa" viewBox="0 -960 960 960"><path d="M220-80q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h110v-10q0-63 43.5-106.5T480-880q63 0 106.5 43.5T630-730v10h110q24 0 42 18t18 42v520q0 24-18 42t-42 18H220Zm170-640h180v-10q0-38-26-64t-64-26q-38 0-64 26t-26 64v10Zm231.5 171.5Q630-557 630-570v-90h-60v90q0 13 8.5 21.5T600-540q13 0 21.5-8.5Zm-240 0Q390-557 390-570v-90h-60v90q0 13 8.5 21.5T360-540q13 0 21.5-8.5Z"/></symbol><symbol id="i-cafe" viewBox="0 -960 960 960"><path d="M190-120q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h580q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H190Zm121-140q-63 0-107-43.5T160-410v-370q0-24.75 17.63-42.38Q195.25-840 220-840h600q24.75 0 42.38 17.62Q880-804.75 880-780v160q0 24.75-17.62 42.37Q844.75-560 820-560h-96v150q0 63-44 106.5T573-260H311Zm413-360h96v-160h-96v160Z"/></symbol><symbol id="i-carrito" viewBox="0 -960 960 960"><path d="M236-102.21q-21-21.21-21-51T236.21-204q21.21-21 51-21T338-203.79q21 21.21 21 51T337.79-102q-21.21 21-51 21T236-102.21Zm400 0q-21-21.21-21-51T636.21-204q21.21-21 51-21T738-203.79q21 21.21 21 51T737.79-102q-21.21 21-51 21T636-102.21ZM205-801h589.07q22.97 0 34.95 21 11.98 21-.02 42L694-495q-11 19-28.56 30.5T627-453H324l-56 104h461q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H277q-42 0-60.5-28t.5-63l64-118-152-322H81q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32Q68.25-880 81-880h68q9 0 16.2 4.43 7.2 4.44 10.8 12.57l29 62Z"/></symbol><symbol id="i-casa" viewBox="0 -960 960 960"><path d="M160-180v-390q0-14.25 6.38-27 6.37-12.75 17.62-21l260-195q15.68-12 35.84-12Q500-825 516-813l260 195q11.25 8.25 17.63 21 6.37 12.75 6.37 27v390q0 24.75-17.62 42.37Q764.75-120 740-120H590q-12.75 0-21.37-8.63Q560-137.25 560-150v-220q0-12.75-8.62-21.38Q542.75-400 530-400H430q-12.75 0-21.37 8.62Q400-382.75 400-370v220q0 12.75-8.62 21.37Q382.75-120 370-120H220q-24.75 0-42.37-17.63Q160-155.25 160-180Z"/></symbol><symbol id="i-celular" viewBox="0 -960 960 960"><path d="M260-40q-25 0-42.5-17.5T200-100v-760q0-24 18-42t42-18h438q25 0 42.5 17.5T758-860v150q18 3 30 17t12 32v74q0 19-12 33t-30 17v437q0 25-17.5 42.5T698-40H260Zm219-680q12 0 21-9t9-21q0-12-9-21t-21-9q-12 0-21 9t-9 21q0 12 9 21t21 9Z"/></symbol><symbol id="i-cine" viewBox="0 -960 960 960"><path d="m140-800 58 119q8 15 22 24t31 9q32 0 49-27.5t3-56.5l-33-68h89l58 119q8 15 22 24t31 9q32 0 49-27.5t3-56.5l-33-68h89l58 119q8 15 22 24t31 9q32 0 49-27.5t3-56.5l-33-68h112q24 0 42 18t18 42v520q0 24-18 42t-42 18H140q-24 0-42-18t-18-42v-520q0-24 18-42t42-18Z"/></symbol><symbol id="i-cochera" viewBox="0 -960 960 960"><path d="M360-376v196q0 25-17.5 42.5T300-120q-25 0-42.5-17.5T240-180v-600q0-25 17.5-42.5T300-840h228q98 0 165 67t67 165q0 98-67 165t-165 67H360Zm0-120h168q48 0 80-32t32-80q0-48-32-80t-80-32H360v224Z"/></symbol><symbol id="i-colectivo" viewBox="0 -960 960 960"><path d="M302-202v39q0 17.92-12.56 30.46T258.94-120q-17.94 0-30.44-12.54T216-163v-68q-29-16-42.5-46T160-341v-397q0-73.66 76.5-107.83T481-880q166 0 242.5 34T800-738v397q0 34-13.5 64T744-231v68q0 17.92-12.56 30.46T700.94-120q-17.94 0-30.44-12.54T658-163v-39H302Zm-82-329h520v-173H220v173Zm145 202.94q16-16.06 16-39T364.94-406q-16.06-16-39-16T287-405.94q-16 16.06-16 39T287.06-328q16.06 16 39 16T365-328.06Zm308 0q16-16.06 16-39T672.94-406q-16.06-16-39-16T595-405.94q-16 16.06-16 39T595.06-328q16.06 16 39 16T673-328.06Z"/></symbol><symbol id="i-comida" viewBox="0 -960 960 960"><path d="M285-600v-250q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v250h65v-250q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v249.73q0 58.27-36.5 99.77Q397-459 345-448v338q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63Q285-97.25 285-110v-338q-52-11-88.5-52.5T160-600.27V-850q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v250h65Zm415 200h-85q-12.75 0-21.37-8.63Q585-417.25 585-430v-275q0-69 42.5-122t98.5-53q14 0 24 10.13T760-846v736q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63Q700-97.25 700-110v-290Z"/></symbol><symbol id="i-compu" viewBox="0 -960 960 960"><path d="M70-120q-13 0-21.5-8.5T40-150q0-13 8.5-21.5T70-180h820q13 0 21.5 8.5T920-150q0 13-8.5 21.5T890-120H70Zm70-120q-24 0-42-18t-18-42v-480q0-24 18-42t42-18h680q24 0 42 18t18 42v480q0 24-18 42t-42 18H140Z"/></symbol><symbol id="i-corazon" viewBox="0 -960 960 960"><path d="M458-144q-11-4-19-12l-53-49Q262-320 171-424.5T80-643q0-90 60.5-150.5T290-854q51 0 101 24.5t89 80.5q44-56 91-80.5t99-24.5q89 0 149.5 60.5T880-643q0 114-91 218.5T574-205l-53 49q-8 8-19 12t-22 4q-11 0-22-4Z"/></symbol><symbol id="i-dentista" viewBox="0 -960 960 960"><path d="M680-875q66 0 113 47t47 113q0 11-1.5 29.5T834-643l-55 403q-5 41-36 63.5T677-154q-21 0-41-9t-34-29L495-348q-2-3-6.5-5t-9.5-2q-2 0-16 9L359-195q-14 21-35 31t-43 10q-35 0-65.5-22.5T180-241l-54-402q-3-24-4.5-42.5T120-715q0-66 47-113t113-47q36 0 57.5 9.5T379-845q20 11 42.5 20.5T480-815q36 0 58.5-9.5T581-845q20-11 42-20.5t57-9.5Z"/></symbol><symbol id="i-ducha" viewBox="0 -960 960 960"><path d="M298-263q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Zm182 0q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Zm182 0q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9ZM230-413q-13 0-21.5-8.5T200-443v-30q0-107 72.5-187T450-751v-59q0-13 8.5-21.5T480-840q13 0 21.5 8.5T510-810v59q105 11 177.5 91T760-473v30q0 13-8.5 21.5T730-413H230Zm68 293q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Zm182 0q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Zm182 0q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Z"/></symbol><symbol id="i-educacion" viewBox="0 -960 960 960"><path d="M860-313v-252L508-375q-14 8-29 7.5t-29-8.5L88-574q-8-5-11.5-11.5T73-600q0-8 3.5-14.5T88-626l362-198q7-4 14-6t15-2q8 0 15 2t14 6l396 215q8 4 12 11.5t4 15.5v269q0 13-8.5 21.5T890-283q-13 0-21.5-8.5T860-313ZM450-136 220-262q-14-8-22.5-22t-8.5-31v-174l261 143q14 8 29 8t29-8l261-143v174q0 17-8.5 31T738-262L508-136q-7 4-14 6t-15 2q-8 0-15-2t-14-6Z"/></symbol><symbol id="i-estrella" viewBox="0 -960 960 960"><path d="M480-269 294-157q-8 5-17 4.5t-16-5.5q-7-5-10.5-13t-1.5-18l49-212-164-143q-8-7-9.5-15.5t.5-16.5q2-8 9-13.5t17-6.5l217-19 84-200q4-9 12-13.5t16-4.5q8 0 16 4.5t12 13.5l84 200 217 19q10 1 17 6.5t9 13.5q2 8 .5 16.5T826-544L662-401l49 212q2 10-1.5 18T699-158q-7 5-16 5.5t-17-4.5L480-269Z"/></symbol><symbol id="i-etiqueta" viewBox="0 -960 960 960"><path d="M863-404 557-97q-9 8.5-20.25 12.75T514.25-80Q503-80 492-84.5T472-97L98-472q-8-8-13-18.96-5-10.95-5-23.04v-306q0-24.75 17.63-42.38Q115.25-880 140-880h307q12.07 0 23.39 4.87Q481.7-870.25 490-862l373 373q9.39 9 13.7 20.25 4.3 11.25 4.3 22.5t-4.5 22.75Q872-412 863-404ZM245-664q21 0 36.5-15.5T297-716q0-21-15.5-36.5T245-768q-21 0-36.5 15.5T193-716q0 21 15.5 36.5T245-664Z"/></symbol><symbol id="i-factura" viewBox="0 -960 960 960"><path d="M222-80q-43.75 0-74.37-30.63Q117-141.25 117-185v-95q0-12.75 8.63-21.38Q134.25-310 147-310h97v-552q0-5.25 4.5-7.13Q253-871 257-867l36 36q4.64 5 10.82 5 6.18 0 11.18-5l38-38q4.64-5 10.82-5 6.18 0 11.18 5l37 38q4.64 5 10.82 5 6.18 0 11.18-5l38-38q4.64-5 10.82-5 6.18 0 11.18 5l38 38q4.64 5 10.82 5 6.18 0 11.18-5l38-38q4.64-5 10.82-5 6.18 0 11.18 5l38 38q4.64 5 10.82 5 6.18 0 11.18-5l38-38q4.64-5 10.82-5 6.18 0 11.18 5l38 38q4.64 5 10.82 5 6.18 0 11.18-5l36-36q4-4 8.5-2.13 4.5 1.88 4.5 7.13v677q0 43.75-30.62 74.37Q781.75-80 738-80H222Zm514.5-60q19.5 0 31.5-12.5t12-32.5v-611H307v536h360q12.75 0 21.38 8.62Q697-242.75 697-230v45q0 20 10 32.5t29.5 12.5ZM390-702h180q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H390q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5Zm0 134h180q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H390q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5Zm303-74q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Zm0 129q-12 0-21-9t-9-21q0-12 9-21t21-9q12 0 21 9t9 21q0 12-9 21t-21 9Z"/></symbol><symbol id="i-farmacia" viewBox="0 -960 960 960"><path d="M440-380v80q0 16.67 11.74 28.33Q463.47-260 480.24-260q16.76 0 28.26-11.67Q520-283.33 520-300v-80h80q16.67 0 28.33-11.74Q640-403.47 640-420.24q0-16.76-11.67-28.26Q616.67-460 600-460h-80v-80q0-16.67-11.74-28.33Q496.53-580 479.76-580q-16.76 0-28.26 11.67Q440-556.67 440-540v80h-80q-16.67 0-28.33 11.74Q320-436.53 320-419.76q0 16.76 11.67 28.26Q343.33-380 360-380h80ZM260-120q-24.75 0-42.37-17.63Q200-155.25 200-180v-479q0-24.75 17.63-42.38Q235.25-719 260-719h440q24.75 0 42.38 17.62Q760-683.75 760-659v479q0 24.75-17.62 42.37Q724.75-120 700-120H260Zm10-660q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h420q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H270Z"/></symbol><symbol id="i-flores" viewBox="0 -960 960 960"><path d="M480-570q34 0 57-24t23-56q0-34-23-57t-57-23q-32 0-56 23t-24 57q0 32 24 56t56 24Zm-65.5 168.5Q385-423 371-458q-6 0-12.5.5t-12.5.5q-48 0-82-34t-34-82q0-20 8-39.5t23-37.5q-14-18-22-37.5t-8-39.5q0-48 33.5-82t81.5-34q6 0 12.5.5t12.5.5q14-35 43.5-56.5T480-920q36 0 65.5 21.5T589-842q6 0 12.5-.5t12.5-.5q48 0 81.5 34t33.5 82q0 20-7.5 39.5T699-650q14 18 22 37.5t8 39.5q0 48-33.5 82T614-457q-6 0-12.5-.5T589-458q-14 35-43.5 56.5T480-380q-36 0-65.5-21.5ZM480-80q0-123 85.5-225T770-432q14-3 27.5-.5T820-419q10 11 12 24.5t-1 27.5q-26 118-128 202.5T480-80Zm0 0q0-123-85.5-225T190-432q-14-3-27.5-.5T140-419q-10 11-12 25t1 28q26 118 128 202t223 84Z"/></symbol><symbol id="i-gimnasio" viewBox="0 -960 960 960"><path d="M268-650 147-529q-9 9-21 9t-21-9q-8-8-8.5-20.5T104-571l36-37-35-35q-9-9-9-21t9-21l64-64-21-21q-9-9-9-21t9-21q8-8 20.5-8.5T190-813l22 21 63-63q9-9 21-9t21 9l35 35 37-36q9-8 21-8t21 9q9 9 9 21t-9 21L310-692l382 382 121-121q9-9 21-9t21 9q8 8 8.5 20.5T856-389l-36 37 35 35q9 9 9 21t-9 21l-65 65 21 21q9 9 9 21t-9 21q-9 9-21 9t-21-9l-21-21-63 63q-9 9-21 9t-21-9l-35-35-37 36q-9 8-21 8t-21-9q-9-9-9-21t9-21l121-121-382-382Z"/></symbol><symbol id="i-grafico" viewBox="0 -960 960 960"><path d="M102-252q-9-9-9-21.5t9-21.5l228-227q16.93-17 41.97-17Q397-539 414-522l125 125 241-241h-97q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h167q12.75 0 21.38 8.62Q880-680.75 880-668v167q0 12-8.27 21t-20.5 9Q839-471 830-480t-9-21v-93L580-354q-16.93 17-41.97 17Q513-337 496-354L371-478 145-252q-9 9-21.5 9t-21.5-9Z"/></symbol><symbol id="i-herramienta" viewBox="0 -960 960 960"><path d="M753-82q-5-2-10-7L501-331q-5-5-7-10t-2-11q0-6 2-11t7-10l85-85q5-5 10-7t11-2q6 0 11 2t10 7l242 242q5 5 7 10t2 11q0 6-2 11t-7 10l-85 85q-5 5-10 7t-11 2q-6 0-11-2Zm-569.5 0q-5.5-2-10.5-7l-84-84q-5-5-7-10.5T80-195q0-6 2-11t7-10l225-225h85l38-38-175-175h-57L80-779l99-99 125 125v57l175 175 130-130-67-67 56-56H485l-18-18 128-128 18 18v113l56-56 169 169q15 15 23.5 34.5T870-600q0 20-6.5 38.5T845-528l-85-85-56 56-52-52-211 211v84L216-89q-5 5-10 7t-11 2q-6 0-11.5-2Z"/></symbol><symbol id="i-hotel" viewBox="0 -960 960 960"><path d="M69.82-200Q57-200 48.5-208.63 40-217.25 40-230v-525q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v364h353v-249q0-24.75 17.63-42.38Q488.25-700 513-700h262q59.81 0 102.41 42.59Q920-614.81 920-555v325q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37v-101H100v101q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63ZM194.5-479.5Q164-510 164-555t30.5-75.5Q225-661 270-661t75.5 30.5Q376-600 376-555t-30.5 75.5Q315-449 270-449t-75.5-30.5Z"/></symbol><symbol id="i-impuesto" viewBox="0 -960 960 960"><path d="M180-120q-23 0-41.5-18T120-180v-600q0-23 18.5-41.5T180-840h600q24 0 42 18.5t18 41.5v54H538q-58 0-96 38t-38 95v227q0 57 38 95t96 38h302v53q0 24-18 42t-42 18H180Zm358-173q-34 0-54-20t-20-53v-227q0-34 20-53.5t54-19.5h269q34 0 54 19.5t20 53.5v227q0 33-20 53t-54 20H538Zm158.5-142.5Q716-455 716-481q0-25-19.5-44T652-544q-25 0-44.5 19T588-481q0 26 19.5 45.5T652-416q25 0 44.5-19.5Z"/></symbol><symbol id="i-internet" viewBox="0 -960 960 960"><path d="M417-154q-27-27-27-63t27-63q27-27 63-27t63 27q27 27 27 63t-27 63q-27 27-63 27t-63-27Zm209-378.5Q694-505 757-451q14 12 15 30.5T759-388q-14 14-32 13t-33-13q-53-44-106.5-63T480-470q-54 0-107.5 19T266-388q-15 12-33 13t-32-13q-14-14-13-32.5t15-30.5q63-54 131-81.5T480-560q78 0 146 27.5Zm95.5-219Q835-703 926-622q14 13 15.5 31.5T929-558q-14 14-33.5 13.5T861-558q-83-70-178-111t-203-41q-108 0-203 41T99-558q-15 13-34 13.5T32-558q-14-14-13-32.5T34-622q91-81 204.5-129.5T480-800q128 0 241.5 48.5Z"/></symbol><symbol id="i-juego" viewBox="0 -960 960 960"><path d="M147-200q-38 0-59.5-25.5T72-296l48-335q8-53 49.5-91t94.5-38h433q53 0 94.5 38t49.5 91l47 335q6 45-15.5 70.5T813-200q-23 0-39-7.5T747-226L643-330H317L213-226q-11 11-27 18.5t-39 7.5Zm581-252q12-12 12-28t-12-28q-12-12-28-12t-28 12q-12 12-12 28t12 28q12 12 28 12t28-12Zm-85-130q12-12 12-28t-12-28q-12-12-28-12t-28 12q-12 12-12 28t12 28q12 12 28 12t28-12Zm-343 62v50q0 11 7 18t18 7q11 0 18-7t7-18v-50h50q11 0 18-7t7-18q0-11-7-18t-18-7h-50v-50q0-11-7-18t-18-7q-11 0-18 7t-7 18v50h-50q-11 0-18 7t-7 18q0 11 7 18t18 7h50Z"/></symbol><symbol id="i-juguete" viewBox="0 -960 960 960"><path d="M276-160q-45 0-79.5-33.5T159-275q-37-23-57.5-58.5T81-411q0-52 30.5-93.5T192-557l-81-85-19 20q-9 10-21.5 10T49-622q-9-9-9-21t9-22l81-84q9-9 21.5-9t21.5 9q9 10 9 22t-9 21l-19 21 72 77 39-117q11-33 38.5-54t61.5-21h232q34 0 62 21t38 54l50 166q57 5 95 46.5T880-411q0 42-20.5 77.5T802-275q-3 48-37.5 81.5T685-160q-42 0-73.5-29T572-260H389q-8 42-39.5 71T276-160Zm-2-401h175v-179h-84q-15 0-26 9.5T323-707l-49 146Zm235 0h175l-45-146q-5-14-16-23.5t-26-9.5h-88v179ZM319-237q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm409 0q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Z"/></symbol><symbol id="i-libro" viewBox="0 -960 960 960"><path d="M512-250q50-25 98-37.5T712-300q38 0 78.5 6t69.5 16v-429q-34-17-72-25t-76-8q-54 0-104.5 16.5T512-677v427Zm-44.5 77.5Q461-174 456-178q-47-29-100-45t-108-16q-37 0-72 9t-70 22q-23 11-44.5-3T40-251v-463q0-15 7-27.5T68-761q42-20 87.5-29.5T248-800q63 0 122.5 17T482-731q51-35 109.5-52T712-800q47 0 92 9.5t87 29.5q14 7 21.5 19.5T920-714v463q0 28-22.5 42.5t-44.5.5q-34-14-69-22.5t-72-8.5q-54 0-106 16t-98 45q-5 4-11.5 5.5T482-171q-8 0-14.5-1.5ZM560-608q0-6 4-11.5t9-7.5q30-11 61.5-17t65.5-6q22 0 43 2.5t41 7.5q6 2 11 7.5t5 12.5q0 11-7.5 17t-18.5 3q-17-5-35.5-7.5T700-610q-29 0-56 5.5T591-588q-14 5-22.5-.5T560-608Zm0 220q0-6 4-12t9-8q30-11 61.5-16.5T700-430q22 0 43 2.5t41 7.5q6 2 11 7.5t5 12.5q0 11-7.5 17t-18.5 3q-17-5-35.5-7.5T700-390q-29 0-56 5t-53 16q-14 5-22.5 0t-8.5-19Zm0-110q0-6 4-11.5t9-7.5q30-11 61.5-17t65.5-6q22 0 43 2.5t41 7.5q6 2 11 7.5t5 12.5q0 11-7.5 17t-18.5 3q-17-5-35.5-7.5T700-500q-29 0-56 5.5T591-478q-14 5-22.5-.5T560-498Z"/></symbol><symbol id="i-luz" viewBox="0 -960 960 960"><path d="M360-360H217q-18 0-26.5-16t2.5-31l338-488q8-11 20-15t24 1q12 5 19 16t5 24l-39 309h176q19 0 27 17t-4 32L388-66q-8 10-20.5 13T344-55q-11-5-17.5-16T322-95l38-265Z"/></symbol><symbol id="i-mascota" viewBox="0 -960 960 960"><path d="M169.86-485Q132-485 106-511.14t-26-64Q80-613 106.14-639t64-26Q208-665 234-638.86t26 64Q260-537 233.86-511t-64 26ZM291-681.14q-26-26.14-26-64T291.14-809q26.14-26 64-26T419-808.86q26 26.14 26 64T418.86-681q-26.14 26-64 26T291-681.14Zm250 0q-26-26.14-26-64T541.14-809q26.14-26 64-26T669-808.86q26 26.14 26 64T668.86-681q-26.14 26-64 26T541-681.14ZM789.86-485Q752-485 726-511.14t-26-64Q700-613 726.14-639t64-26Q828-665 854-638.86t26 64Q880-537 853.86-511t-64 26ZM266-75q-42 0-69-31.53-27-31.52-27-74.47 0-42 25.5-74.5T250-318q22-22 41-46.5t36-50.5q29-44 65-82t88-38q52 0 88.5 38t65.5 83q17 26 35.5 50t40.5 46q29 30 54.5 62.5T790-181q0 42.95-27 74.47Q736-75 694-75q-54 0-107-9t-107-9q-54 0-107 9t-107 9Z"/></symbol><symbol id="i-medico" viewBox="0 -960 960 960"><path d="M140-80q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h180v-100q0-24 18-42t42-18h200q24 0 42 18t18 42v100h180q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Zm240-640h200v-100H380v100Zm70 350v90q0 12.75 8.68 21.37 8.67 8.63 21.5 8.63 12.82 0 21.32-8.63 8.5-8.62 8.5-21.37v-90h90q12.75 0 21.38-8.68 8.62-8.67 8.62-21.5 0-12.82-8.62-21.32-8.63-8.5-21.38-8.5h-90v-90q0-12.75-8.68-21.38-8.67-8.62-21.5-8.62-12.82 0-21.32 8.62-8.5 8.63-8.5 21.38v90h-90q-12.75 0-21.37 8.68-8.63 8.67-8.63 21.5 0 12.82 8.63 21.32 8.62 8.5 21.37 8.5h90Z"/></symbol><symbol id="i-mueble" viewBox="0 -960 960 960"><path d="M193-119q-13 0-21.5-8.5T163-149v-43h-19q-45 0-74.5-32.5T40-302v-242q0-31 20.5-53.5T111-620q30 0 50.5 22.5T182-544v173h596v-173q0-31 20.5-53.5T849-620q30 0 50.5 22.5T920-544v242q0 45-29.5 77.5T817-192h-20v43q0 13-8.5 21.5T767-119q-13 0-21.5-8.5T737-149v-43H223v43q0 13-8.5 21.5T193-119Zm49-312v-113q0-48-26.5-85.5T144-677v-60q0-42 28-72.5t70-30.5h476q42 0 70.5 30.5T817-737v60q-45 11-72 48.5T718-544v113H242Z"/></symbol><symbol id="i-musica" viewBox="0 -960 960 960"><path d="M286.5-163.5Q243-207 243-270t43.5-106.5Q330-420 393-420q28 0 50.5 8t39.5 22v-420q0-13 8.5-21.5T513-840h174q13 0 21.5 8.5T717-810v75q0 13-8.5 21.5T687-705H543v435q0 63-43.5 106.5T393-120q-63 0-106.5-43.5Z"/></symbol><symbol id="i-nafta" viewBox="0 -960 960 960"><path d="M160-150v-630q0-24 18-42t42-18h269q24 0 42 18t18 42v288h65q20.63 0 35.31 14.69Q664-462.63 664-442v219q0 21.68 15.5 36.34Q695-172 717-172t37.5-14.66Q770-201.32 770-223v-295q-11 6-23 9t-24 3q-39.48 0-66.74-27.26Q629-560.52 629-600q0-31.61 18-56.81Q665-682 695-690l-77-77q-8-7.64-8-17.82t8-18.18q8-8 18-7.5t18 8.5l135 135q14 14 22.5 30.5T820-600v377q0 43.26-29.82 73.13-29.81 29.87-73 29.87Q674-120 644-149.87q-30-29.87-30-73.13v-219h-65v292q0 12.75-8.62 21.37Q531.75-120 519-120H190q-12.75 0-21.37-8.63Q160-137.25 160-150Zm60-402h269v-228H220v228Zm503-4q18 0 31-13t13-31q0-18-13-31t-31-13q-18 0-31 13t-13 31q0 18 13 31t31 13Z"/></symbol><symbol id="i-ninos" viewBox="0 -960 960 960"><path d="M616-515q13-13 13-32t-13-32q-13-13-32-13t-32 13q-13 13-13 32t13 32q13 13 32 13t32-13Zm-209 0q13-13 13-32t-13-32q-13-13-32-13t-32 13q-13 13-13 32t13 32q13 13 32 13t32-13Zm174 200q47-29 73-80H306q26 51 73 80t101 29q54 0 101-29ZM340.5-148.5Q275-177 226-226t-77.5-114.5Q120-406 120-480t28.5-139.5Q177-685 226-734t114.5-77.5Q406-840 480-840t139.5 28.5Q685-783 734-734t77.5 114.5Q840-554 840-480t-28.5 139.5Q783-275 734-226t-114.5 77.5Q554-120 480-120t-139.5-28.5ZM495-638q29 0 44-8.5t15-24.5q0-9-6.5-14.5T530-691q-7 0-15 1.5t-20 1.5q-25 0-41.5-16.5T437-746q0-10 1.5-20.5T442-784q-14 2-26 4.5t-26 7.5q-2 5-2.5 12.5T387-746q0 46 31 77t77 31Z"/></symbol><symbol id="i-nota" viewBox="0 -960 960 960"><path d="M349-250h262q13 0 21.5-8.5T641-280q0-13-8.5-21.5T611-310H349q-13 0-21.5 8.5T319-280q0 13 8.5 21.5T349-250Zm0-170h262q13 0 21.5-8.5T641-450q0-13-8.5-21.5T611-480H349q-13 0-21.5 8.5T319-450q0 13 8.5 21.5T349-420ZM220-80q-24 0-42-18t-18-42v-680q0-24 18-42t42-18h336q12 0 23.5 5t19.5 13l183 183q8 8 13 19.5t5 23.5v496q0 24-18 42t-42 18H220Zm331-584q0 13 8.5 21.5T581-634h159L551-820v156Z"/></symbol><symbol id="i-peluqueria" viewBox="0 -960 960 960"><path d="M481-415 364-298q11 17 13.5 33t2.5 35q0 64-43 107T230-80q-64 0-107-43T80-230q0-64 43-107t107-43q18 0 35.5 5t36.5 15l116-116-118-118q-17 8-34.5 11t-35.5 3q-64 0-107-43T80-730q0-64 43-107t107-43q64 0 107 43t43 107q0 19-2.5 36T367-662l468 468q23 23 10.5 51.5T801-114q-9 0-17.5-3.5T768-128L481-415Zm118-112-66-66 235-235q7-7 15.5-10.5T801-842q32 0 43.5 29T834-762L599-527ZM294-666q26-26 26-64t-26-64q-26-26-64-26t-64 26q-26 26-26 64t26 64q26 26 64 26t64-26Zm202.5 203.5Q502-468 502-476t-5.5-13.5Q491-495 483-495t-13.5 5.5Q464-484 464-476t5.5 13.5Q475-457 483-457t13.5-5.5ZM294-166q26-26 26-64t-26-64q-26-26-64-26t-64 26q-26 26-26 64t26 64q26 26 64 26t64-26Z"/></symbol><symbol id="i-persona" viewBox="0 -960 960 960"><path d="M372-523q-42-42-42-108t42-108q42-42 108-42t108 42q42 42 42 108t-42 108q-42 42-108 42t-108-42ZM160-220v-34q0-38 19-65t49-41q67-30 128.5-45T480-420q62 0 123 15.5T731-360q31 14 50 41t19 65v34q0 25-17.5 42.5T740-160H220q-25 0-42.5-17.5T160-220Z"/></symbol><symbol id="i-pizza" viewBox="0 -960 960 960"><path d="M480-840q97 0 187 32t167 89q12 9 18.5 21.95t6.5 26.67q0 8.38-2.5 16.84-2.5 8.45-7.5 16.54L530-156q-9 13.5-22.5 20.25T479.88-129q-14.12 0-27.5-6.5T430-156L111-637q-5.38-8.25-7.69-16.5Q101-661.75 101-670q0-13.85 6.5-26.92Q114-710 126-719q77-57 167-89t187-32Zm-71 258.94q16-16.06 16-39T408.94-659q-16.06-16-39-16T331-658.94q-16 16.06-16 39T331.06-581q16.06 16 39 16T409-581.06Zm110 215q16-16.06 16-39T518.94-444q-16.06-16-39-16T441-443.94q-16 16.06-16 39T441.06-366q16.06 16 39 16T519-366.06Z"/></symbol><symbol id="i-playa" viewBox="0 -960 960 960"><path d="M772-151 555-368q-10-10-10-23t10-23q10-10 23-10t23 10l217 217q10 10 10 23t-10 23q-10 10-23 10t-23-10Zm-519-51q-12 12-27.5 11T200-205q-70-95-78.5-210.5T166-633q2 33 14.5 73.5T216-475q23 44 55 91t72 92l-90 90Zm131-131q-49-50-85-106.5t-54.5-109Q226-601 226-645t22-68q24-26 69.5-27T418-723q55 18 113 53.5T636-585L384-333Zm380-436q13 10 14 25.5T767-716l-90 90q-44-40-90.5-72t-92-54.5Q449-775 407-787t-76-13q103-55 220-47.5T764-769Z"/></symbol><symbol id="i-regalo" viewBox="0 -960 960 960"><path d="M140-277v97h680v-97H140Zm0-443h125q-5-9-8-22.5t-3-24.5q0-47 33-80t79-33q31 0 57 15.5t41 39.5l16 26 17-26q16-25 41-40t54-15q48 0 81 32.5t33 80.5q0 11-2.5 22t-7.5 25h124q24 0 42 18t18 42v480q0 24-18 42t-42 18H140q-24 0-42-18t-18-42v-480q0-24 18-42t42-18Zm0 336h680v-276H571l83 115q8 10 5.5 22T647-503q-10 8-22 6t-20-13L480-683 355-510q-8 11-19.5 13t-22.5-6q-10-8-12.5-20t5.5-22l83-115H140v276Zm264.5-345.5Q420-745 420-767t-15.5-37.5Q389-820 367-820t-37.5 15.5Q314-789 314-767t15.5 37.5Q345-714 367-714t37.5-15.5ZM592-714q23 0 38.5-15.5T646-767q0-22-15.5-37.5T592-820q-21 0-36.5 15.5T540-767q0 22 15.5 37.5T592-714Z"/></symbol><symbol id="i-reloj" viewBox="0 -960 960 960"><path d="M513-492v-171q0-13-8.5-21.5T483-693q-13 0-21.5 8.5T453-663v183q0 6 2 11t6 10l144 149q9 10 22.5 9.5T650-310q9-9 9-22t-9-22L513-492ZM480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-82 31.5-155t86-127.5Q252-817 325-848.5T480-880q82 0 155 31.5t127.5 86Q817-708 848.5-635T880-480q0 82-31.5 155t-86 127.5Q708-143 635-111.5T480-80Z"/></symbol><symbol id="i-ropa" viewBox="0 -960 960 960"><path d="M200-220h560L480-443 200-220Zm206-472q-3 8-10 13.5t-17 5.5q-13 0-21.5-8.5T349-703v-6q0-3 2-6 17-38 52-61.5t77-23.5q58 0 99 40.5t41 98.5q0 49-31 86.5T510-523v28l358 281q6 5 9 11t3 13q0 13-8.5 21.5T850-160H110q-13 0-21.5-8.5T80-190q0-7 3-13t9-11l358-281v-55q0-12 8.5-21t20.5-9q34 0 57.5-23.5T560-661q0-33-23.5-56T480-740q-24 0-44 13t-30 35Z"/></symbol><symbol id="i-salud" viewBox="0 -960 960 960"><path d="M435-435v111q0 18.75 13.18 31.87 13.17 13.13 32 13.13Q499-279 512-292.13q13-13.12 13-31.87v-111h111q18.75 0 31.88-13.18 13.12-13.17 13.12-32Q681-499 667.88-512q-13.13-13-31.88-13H525v-111q0-18.75-13.18-31.88-13.17-13.12-32-13.12Q461-681 448-667.88q-13 13.13-13 31.88v111H324q-18.75 0-31.87 13.18-13.13 13.17-13.13 32Q279-461 292.13-448q13.12 13 31.87 13h111ZM180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Z"/></symbol><symbol id="i-seguro" viewBox="0 -960 960 960"><path d="M470.5-85q-4.5-1-9.5-3-139-47-220-168.5T160-523v-196q0-19 11-34.5t28-22.5l260-97q11-4 21-4t21 4l260 97q17 7 28 22.5t11 34.5v196q0 145-81 266.5T499-88q-5 2-9.5 3t-9.5 1q-5 0-9.5-1Z"/></symbol><symbol id="i-spa" viewBox="0 -960 960 960"><path d="M431-89q-135-32-232.5-134T83-499q-1-11 2-19.5T95-533q7-6 16-9.5t19-1.5q177 24 266.5 140T483-130q0 11-4 19t-12 14q-7 5-16 7.5t-20 .5Zm48-297q-22-38-60.5-82.5T337-530q2-64 35-152t78-157q6-9 14-13t16-4q8 0 16.5 4t13.5 13q46 69 78.5 157.5T623-530q-42 17-82.5 61.5T479-386Zm62 294q5-57-2.5-119.5T513-322q35-78 114.5-141T830-544q11-2 19.5 1.5T865-533q7 6 10.5 14.5T877-499q-17 171-112 271T541-92Z"/></symbol><symbol id="i-sueldo" viewBox="0 -960 960 960"><path d="M100-160q-24.75 0-42.37-17.63Q40-195.25 40-220v-430q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v430h670q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H100Zm120-120q-24.75 0-42.37-17.63Q160-315.25 160-340v-400q0-24.75 17.63-42.38Q195.25-800 220-800h640q24.75 0 42.38 17.62Q920-764.75 920-740v400q0 24.75-17.62 42.37Q884.75-280 860-280H220Zm100-60q0-42-29-71t-71-29v100h100Zm440 0h100v-100q-42 0-71 29t-29 71Zm-220-80q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM220-640q42 0 71-29t29-71H220v100Zm640 0v-100H760q0 42 29 71t71 29Z"/></symbol><symbol id="i-supermercado" viewBox="0 -960 960 960"><path d="M179-120q-24 0-42-18t-18-42v-339q-28-24-37-59t2-70l43-135q8-27 28-42t46-15h553q28 0 49 15.5t29 41.5l44 135q11 35 1.5 70T840-519v339q0 24-18 42t-42 18H179Zm391-430q29 0 49-19t16-46l-25-165H510v165q0 26 17 45.5t43 19.5Zm-187 0q28 0 47.5-19t19.5-46v-165H350l-25 165q-4 26 14 45.5t44 19.5Zm-182 0q24 0 41.5-16.5T263-607l26-173H189l-46 146q-10 31 8 57.5t50 26.5Zm557 0q32 0 50.5-26t8.5-58l-46-146H671l26 173q3 24 20.5 40.5T758-550Z"/></symbol><symbol id="i-tarjeta" viewBox="0 -960 960 960"><path d="M140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Zm0-342h680v-129H140v129Z"/></symbol><symbol id="i-telefono" viewBox="0 -960 960 960"><path d="M795-120q-116 0-236.5-56T335-335Q232-438 176-558.5T120-795q0-19 13-32t32-13h140q14 0 24 10t14 25l27 126q2 14-.5 25.5T359-634L259-533q26 44 55 82t64 72q37 38 78 69.5t86 55.5l95-98q10-11 23-15t26-2l119 26q15 4 25 16t10 27v135q0 19-13 32t-32 13Z"/></symbol><symbol id="i-torta" viewBox="0 -960 960 960"><path d="M160-80q-17 0-28.5-11.5T120-120v-219q0-24.75 17.63-42.38Q155.25-399 180-399h600q24.75 0 42.38 17.62Q840-363.75 840-339v219q0 17-11.5 28.5T800-80H160Zm47-379v-122q0-24.75 17.63-42.38Q242.25-641 267-641h183v-64q-20-14-30.5-30.53-10.5-16.54-10.5-39.88 0-14.59 5.5-28.09T430-827l39-41q1-1 11.29-5 1.71 0 10.71 5l39 41q10 10 16 23.5t6 28.09q0 23.34-11 39.88Q530-719 510-705v64h183q24.75 0 42.38 17.62Q753-605.75 753-581v122H207Z"/></symbol><symbol id="i-trabajo" viewBox="0 -960 960 960"><path d="M140-120q-24 0-42-18t-18-42v-480q0-24 18-42t42-18h180v-100q0-24 18-42t42-18h200q24 0 42 18t18 42v100h180q24 0 42 18t18 42v480q0 24-18 42t-42 18H140Zm240-600h200v-100H380v100Z"/></symbol><symbol id="i-trago" viewBox="0 -960 960 960"><path d="M450-180v-244L134-764q-6-6-9-14.5t-3-16.5q0-19 13-32t32-13h626q19 0 32 13t13 32q0 8-3 16.5t-9 14.5L510-424v244h180q13 0 21.5 8.5T720-150q0 13-8.5 21.5T690-120H270q-13 0-21.5-8.5T240-150q0-13 8.5-21.5T270-180h180ZM281-695h398l83-81H198l83 81Z"/></symbol><symbol id="i-transferencia" viewBox="0 -960 960 960"><path d="m194-323 100 100q9 9 9 21t-9 21q-9 9-21 9t-21-9L101-332q-5-5-7-10t-2-11q0-6 2-11t7-10l151-151q9-9 21-9t21 9q9 9 9 21t-9 21L194-383h286q13 0 21.5 8.5T510-353q0 13-8.5 21.5T480-323H194Zm572-254H480q-13 0-21.5-8.5T450-607q0-13 8.5-21.5T480-637h286L666-737q-9-9-9-21t9-21q9-9 21-9t21 9l151 151q5 5 7 10t2 11q0 6-2 11t-7 10L708-435q-9 9-21 9t-21-9q-9-9-9-21t9-21l100-100Z"/></symbol><symbol id="i-tren" viewBox="0 -960 960 960"><path d="M160-340v-380q0-41 19-71.5t58.5-50q39.5-19.5 100-29T480-880q86 0 146.5 9t99 28.5Q764-823 782-793t18 73v380q0 59-40.5 99.5T660-200l26 26q15 15 7 34.5T663-120q-6 0-11.5-2t-10.5-7l-71-71H390l-71 71q-5 5-10.5 7t-11.5 2q-21 0-29.5-19.5T274-174l26-26q-59 0-99.5-40.5T160-340Zm60-205h234v-155H220v155Zm294 0h226v-155H514v155ZM374-331q16-16 16-39t-16-39q-16-16-39-16t-39 16q-16 16-16 39t16 39q16 16 39 16t39-16Zm290 0q16-16 16-39t-16-39q-16-16-39-16t-39 16q-16 16-16 39t16 39q16 16 39 16t39-16Z"/></symbol><symbol id="i-vino" viewBox="0 -960 960 960"><path d="M450-180v-185q-99-14-154.5-79.7Q240-510.41 240-600v-210q0-12.75 8.63-21.38Q257.25-840 270-840h420q12.75 0 21.38 8.62Q720-822.75 720-810v210q0 89.59-55.5 155.3Q609-379 510-365v185h100q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H350q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h100ZM300-630h360v-150H300v150Z"/></symbol><symbol id="i-sync" viewBox="0 -960 960 960"><path d="M220-477q0 63 23.5 109.5T307-287l30 21v-94q0-13 8.5-21.5T367-390q13 0 21.5 8.5T397-360v170q0 13-8.5 21.5T367-160H197q-13 0-21.5-8.5T167-190q0-13 8.5-21.5T197-220h100l-15-12q-64-51-93-111t-29-134q0-94 49.5-171.5T342-766q11-5 21 0t14 16q5 11 0 22.5T361-710q-64 34-102.5 96.5T220-477Zm520-6q0-48-23.5-97.5T655-668l-29-26v94q0 13-8.5 21.5T596-570q-13 0-21.5-8.5T566-600v-170q0-13 8.5-21.5T596-800h170q13 0 21.5 8.5T796-770q0 13-8.5 21.5T766-740H665l15 14q60 56 90 120t30 123q0 93-48 169.5T623-195q-11 6-22.5 1.5T584-210q-5-11 0-22.5t16-17.5q65-33 102.5-96T740-483Z"/></symbol><symbol id="i-mas" viewBox="0 -960 960 960"><path d="M207.86-432Q188-432 174-446.14t-14-34Q160-500 174.14-514t34-14Q228-528 242-513.86t14 34Q256-460 241.86-446t-34 14Zm272 0Q460-432 446-446.14t-14-34Q432-500 446.14-514t34-14Q500-528 514-513.86t14 34Q528-460 513.86-446t-34 14Zm272 0Q732-432 718-446.14t-14-34Q704-500 718.14-514t34-14Q772-528 786-513.86t14 34Q800-460 785.86-446t-34 14Z"/></symbol><symbol id="i-dona" viewBox="0 -960 960 960"><path d="M521-842q0-15 11.5-24.5T558-873q121 23 206.5 110T873-555q2 14-6.5 24T843-521H600q-3 0-5-1.5t-3-4.5q-8-22-25.5-38T527-589q-3-1-4.5-3t-1.5-5v-245ZM399-88q-138-27-228-136T81-477q0-145 89.5-256T399-872q16-3 28 7t12 26v243l-4 7q-33 14-53.5 45T361-477q0 35 20.5 63t52.5 42q1 0 5 7v244q0 16-12 26t-28 7Zm156 1q-14 2-24-6.5T521-116v-247q0-3 2-5.5t5-3.5q23-8 39.5-23.5T592-433l8-6h243q14 0 23.5 11.5T873-402q-23 121-110 206.5T555-87Z"/></symbol><symbol id="i-tilde" viewBox="0 -960 960 960"><path d="m378-332 363-363q9-9 21.5-9t21.5 9q9 9 9 21.5t-9 21.5L399-267q-9 9-21 9t-21-9L175-449q-9-9-8.5-21.5T176-492q9-9 21.5-9t21.5 9l159 160Z"/></symbol><symbol id="i-calendario" viewBox="0 -960 960 960"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm300-260q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></symbol><symbol id="i-lista" viewBox="0 -960 960 960"><path d="M407-198q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h403q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H407Zm0-252q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h403q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H407Zm0-253q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h403q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5H407ZM189-161q-28.05 0-48.02-19Q121-199 121-227.5t19.5-48q19.5-19.5 48-19.5t47.5 19.98q19 19.97 19 48.02 0 27.23-19.39 46.61Q216.23-161 189-161Zm0-252q-28.05 0-48.02-19.5Q121-452 121-480t19.98-47.5Q160.95-547 189-547q27.23 0 46.61 19.5Q255-508 255-480t-19.39 47.5Q216.23-413 189-413Zm-48.5-272.5Q121-705 121-733t19.5-47.5Q160-800 188-800t47.5 19.5Q255-761 255-733t-19.5 47.5Q216-666 188-666t-47.5-19.5Z"/></symbol><symbol id="i-cerrar" viewBox="0 -960 960 960"><path d="M480-438 270-228q-9 9-21 9t-21-9q-9-9-9-21t9-21l210-210-210-210q-9-9-9-21t9-21q9-9 21-9t21 9l210 210 210-210q9-9 21-9t21 9q9 9 9 21t-9 21L522-480l210 210q9 9 9 21t-9 21q-9 9-21 9t-21-9L480-438Z"/></symbol></svg>
 
-<header>
-  <div class="header-row">
-    <div class="app-title">Mis Finanzas</div>
-    <div class="header-btns">
-      <button class="icon-btn" id="btn-sync" title="Sincronizar">⟳<span class="badge" id="pending-badge"></span></button>
-      <button class="icon-btn" id="btn-cats" title="Categorías">🏷️</button>
-      <button class="icon-btn" id="btn-settings" title="Configuración">⚙️</button>
+<header class="hero">
+  <div class="hero-bar">
+    <div class="month-nav">
+      <button id="prev-month" aria-label="Mes anterior">‹</button>
+      <span id="month-label"></span>
+      <button id="next-month" aria-label="Mes siguiente">›</button>
     </div>
+    <div class="hero-actions">
+      <button class="icon-btn" id="btn-cats" title="Categorías"><svg><use href="#i-etiqueta"></use></svg></button>
+      <button class="icon-btn" id="btn-sync" title="Sincronizar"><svg><use href="#i-sync"></use></svg><span class="badge" id="pending-badge"></span></button>
+      <button class="icon-btn" id="btn-settings" title="Configuración"><svg><use href="#i-mas"></use></svg></button>
+    </div>
+  </div>
+  <div class="hero-label">Saldo del mes</div>
+  <div class="hero-amount" id="sum-bal"></div>
+  <div class="hero-cards">
+    <button class="hcard" id="card-in">
+      <span class="hcard-top"><i class="in"></i>Ingresos</span>
+      <b id="sum-in"></b>
+    </button>
+    <button class="hcard" id="card-out">
+      <span class="hcard-top"><i class="out"></i>Gastos</span>
+      <b id="sum-out"></b>
+    </button>
   </div>
 </header>
 
-<div class="month-nav">
-  <button id="prev-month">‹</button>
-  <div class="month-label" id="month-label"></div>
-  <button id="next-month">›</button>
-</div>
-
-<div class="summary">
-  <div class="bar"><div class="in" id="bar-in"></div><div class="out" id="bar-out"></div></div>
-  <div class="sum-row"><span class="lbl-in">Ingresos</span><b id="sum-in"></b></div>
-  <div class="sum-row"><span class="lbl-out">Gastos</span><b id="sum-out"></b></div>
-  <div class="sum-row sum-total"><span>Saldo</span><b id="sum-bal"></b></div>
-</div>
-
-<div class="view-toggle">
-  <button id="view-cal">📅 Calendario</button>
-  <button id="view-list">☰ Lista</button>
+<div class="seg view-toggle">
+  <button id="view-cal"><svg><use href="#i-calendario"></use></svg>Calendario</button>
+  <button id="view-list"><svg><use href="#i-lista"></use></svg>Lista</button>
 </div>
 
 <div class="calendar" id="calendar">
@@ -354,11 +431,6 @@
     <div>Lu</div><div>Ma</div><div>Mi</div><div>Ju</div><div>Vi</div><div>Sá</div><div>Do</div>
   </div>
   <div class="cal-grid" id="cal-grid"></div>
-  <div class="cal-legend">
-    <span><i style="background:#e53935"></i>Gastos</span>
-    <span><i style="background:#4caf50"></i>Ingresos</span>
-    <span><i style="background:#ffe082"></i>Hoy</span>
-  </div>
 </div>
 
 <div class="list-toolbar" id="list-toolbar">
@@ -375,22 +447,42 @@
 
 <div class="tx-section" id="tx-list"></div>
 
-<div class="cat-summary" id="cat-summary">
-  <div class="cat-sum-head">
-    <button id="cs-tab-gasto" class="on">Gastos</button>
-    <button id="cs-tab-ingreso">Ingresos</button>
-  </div>
-  <div class="cat-sum-rows" id="cat-summary-rows"></div>
-</div>
-
 <button class="fab" id="fab">+</button>
+
+<!-- ===== Desglose por categoría ("En qué se fue") ===== -->
+<div class="sheet-overlay" id="ov-breakdown">
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-eyebrow" id="bd-month"></div>
+        <div class="sheet-title" id="bd-title">En qué se fue</div>
+      </div>
+      <button class="close-x" data-close="ov-breakdown" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
+    </div>
+    <div class="seg tabs">
+      <button id="bd-tab-gasto" class="on">Gastos</button>
+      <button id="bd-tab-ingreso">Ingresos</button>
+    </div>
+    <div class="form-block" id="bd-chart-box">
+      <div class="donut-row">
+        <div class="donut" id="bd-donut"></div>
+        <div class="donut-legend" id="bd-legend"></div>
+      </div>
+    </div>
+    <div class="form-block flush">
+      <div id="bd-rows"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ===== Day detail ===== -->
 <div class="sheet-overlay" id="ov-day">
   <div class="sheet">
+    <div class="grab"></div>
     <div class="sheet-head">
       <div class="sheet-title" id="day-title"></div>
-      <button class="close-x" data-close="ov-day">✕</button>
+      <button class="close-x" data-close="ov-day" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
     </div>
     <div class="form-block">
       <div class="day-totals">
@@ -399,7 +491,7 @@
         <div><div class="lbl">Saldo</div><div class="val" id="day-bal"></div></div>
       </div>
     </div>
-    <div class="form-block" style="padding:0;overflow:hidden" id="day-list-box">
+    <div class="form-block flush" id="day-list-box">
       <div id="day-list"></div>
     </div>
     <button class="primary-btn" id="btn-add-day">+ Agregar movimiento este día</button>
@@ -409,9 +501,10 @@
 <!-- ===== Category detail (movimientos de una categoría) ===== -->
 <div class="sheet-overlay" id="ov-cat-detail">
   <div class="sheet">
+    <div class="grab"></div>
     <div class="sheet-head">
       <div class="sheet-title" id="cd-title"></div>
-      <button class="close-x" data-close="ov-cat-detail">✕</button>
+      <button class="close-x" data-close="ov-cat-detail" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
     </div>
     <div class="form-block">
       <div class="day-totals">
@@ -420,7 +513,7 @@
         <div><div class="lbl">Promedio</div><div class="val" id="cd-avg"></div></div>
       </div>
     </div>
-    <div class="form-block" style="padding:0;overflow:hidden">
+    <div class="form-block flush">
       <div id="cd-list"></div>
     </div>
   </div>
@@ -429,15 +522,17 @@
 <!-- ===== Add / Edit transaction ===== -->
 <div class="sheet-overlay" id="ov-tx">
   <div class="sheet">
+    <div class="grab"></div>
     <div class="sheet-head">
       <div class="sheet-title" id="tx-sheet-title">Nuevo movimiento</div>
-      <button class="close-x" data-close="ov-tx">✕</button>
+      <button class="close-x" data-close="ov-tx" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
     </div>
     <div class="form-block">
       <div class="type-toggle">
         <button id="tg-gasto">Gasto</button>
         <button id="tg-ingreso">Ingreso</button>
       </div>
+      <div class="field-label">Monto</div>
       <div class="amount-wrap">
         <span class="cur">$</span>
         <input id="f-amount" type="text" inputmode="decimal" placeholder="0,00" autocomplete="off">
@@ -467,15 +562,16 @@
 <!-- ===== Categories manager ===== -->
 <div class="sheet-overlay" id="ov-cats">
   <div class="sheet">
+    <div class="grab"></div>
     <div class="sheet-head">
       <div class="sheet-title">Categorías</div>
-      <button class="close-x" data-close="ov-cats">✕</button>
+      <button class="close-x" data-close="ov-cats" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
     </div>
-    <div class="tabs">
+    <div class="seg tabs">
       <button id="cats-tab-gasto" class="on">De gastos</button>
       <button id="cats-tab-ingreso">De ingresos</button>
     </div>
-    <div class="form-block" style="padding:0">
+    <div class="form-block flush">
       <div id="cats-list"></div>
       <button class="add-cat-btn" id="btn-add-cat"><span class="plus">+</span> Añadir nueva categoría</button>
     </div>
@@ -485,9 +581,10 @@
 <!-- ===== Category editor ===== -->
 <div class="sheet-overlay" id="ov-cat-edit">
   <div class="sheet">
+    <div class="grab"></div>
     <div class="sheet-head">
       <div class="sheet-title" id="cat-edit-title">Nueva categoría</div>
-      <button class="close-x" data-close="ov-cat-edit">✕</button>
+      <button class="close-x" data-close="ov-cat-edit" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
     </div>
     <div class="form-block">
       <div class="field-label">Nombre</div>
@@ -498,6 +595,8 @@
       <div id="c-icon-picker"></div>
     </div>
     <div class="form-block">
+      <div class="field-label">Vista previa</div>
+      <div class="cat-preview" id="c-preview"></div>
       <div class="field-label">Color</div>
       <div class="color-grid" id="c-color-grid"></div>
     </div>
@@ -509,20 +608,30 @@
 <!-- ===== Settings ===== -->
 <div class="sheet-overlay" id="ov-settings">
   <div class="sheet">
+    <div class="grab"></div>
     <div class="sheet-head">
       <div class="sheet-title">Configuración</div>
-      <button class="close-x" data-close="ov-settings">✕</button>
+      <button class="close-x" data-close="ov-settings" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
+    </div>
+    <div class="form-block">
+      <div class="field-label">Estado</div>
+      <div class="status-line"><span class="dot" id="dot-conn"></span><span id="txt-conn"></span><span class="status-meta" id="meta-conn"></span></div>
+      <div class="status-line"><span class="dot" id="dot-pend"></span><span id="txt-pend"></span><span class="status-meta" id="meta-pend"></span></div>
     </div>
     <div class="form-block">
       <div class="field-label">URL del script de Google</div>
       <div class="set-desc">Pegá acá la URL de tu Web App de Google Apps Script (termina en <b>/exec</b>). Está en las instrucciones de instalación.</div>
       <input id="s-url" type="url" class="txt-input" placeholder="https://script.google.com/macros/s/…/exec">
     </div>
-    <div class="form-block">
-      <div class="status-line"><span class="dot" id="dot-conn"></span><span id="txt-conn">Sin probar</span></div>
-      <div class="status-line"><span class="dot" id="dot-pend"></span><span id="txt-pend"></span></div>
-    </div>
     <button class="primary-btn" id="btn-save-settings">Guardar y probar conexión</button>
+    <div class="form-block" style="margin-top:12px">
+      <div class="field-label">Apariencia</div>
+      <div class="seg" id="theme-seg">
+        <button data-tema="claro">Claro</button>
+        <button data-tema="oscuro">Oscuro</button>
+        <button data-tema="sistema">Sistema</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -604,7 +713,8 @@ let queue = LS.get('queue', []);       // ops pendientes de enviar
 let viewMonth = todayStr().slice(0, 7);
 let viewMode = LS.get('viewMode', 'cal');   // 'cal' (calendario) | 'list'
 let sortMode = LS.get('sortMode', 'fecha-desc'); // orden de la vista de lista
-let catSumType = 'gasto';                   // pestaña del resumen por categoría
+let bdType = 'gasto';                       // pestaña de "En qué se fue"
+let tema = LS.get('tema', 'sistema');       // 'claro' | 'oscuro' | 'sistema'
 let selectedDay = null;                     // 'YYYY-MM-DD' del día abierto
 let catDetail = null;                       // { type, name } de la categoría abierta
 let syncing = false;
@@ -641,6 +751,37 @@ function todayStr() {
 function uid() { return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); }
 const fmtMoney = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
 function money(n) { return fmtMoney.format(n || 0); }
+const fmtMoney0 = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+/** Monto sin centavos, para las tarjetas del hero. */
+function money0(n) { return fmtMoney0.format(n || 0); }
+/** Separa los centavos para poder mostrarlos más chicos: "$ 606.500" + ",00". */
+function moneyHtml(n) {
+  const t = money(n), i = t.lastIndexOf(',');
+  if (i < 0) return escapeHtml(t);
+  return escapeHtml(t.slice(0, i)) + '<span class="cents">' + escapeHtml(t.slice(i)) + '</span>';
+}
+function escapeHtml(t) { return String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+/** "hace 2 min", "hace 3 h", "recién" — para el estado de sincronización. */
+function haceCuanto(ts) {
+  if (!ts) return '';
+  const seg = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  if (seg < 45) return 'recién';
+  const min = Math.round(seg / 60);
+  if (min < 60) return 'hace ' + min + ' min';
+  const h = Math.round(min / 60);
+  if (h < 24) return 'hace ' + h + ' h';
+  return 'hace ' + Math.round(h / 24) + ' d';
+}
+/** Encabezado de día en la lista: "Hoy · martes 9". */
+function dayHeadLabel(ds) {
+  const [y, m, d] = ds.split('-').map(Number);
+  const base = new Date(y, m - 1, d).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric' });
+  return ds === todayStr() ? 'Hoy · ' + base : base;
+}
+/** Bloque de "no hay nada acá" con icono del sprite. */
+function emptyHtml(icono, texto) {
+  return '<div class="empty"><svg><use href="#i-' + icono + '"></use></svg><div>' + texto + '</div></div>';
+}
 /** Monto abreviado para las celdas del calendario: 1.678.605 → "1,7M". */
 function shortMoney(n) {
   n = Math.round(Math.abs(n));
@@ -652,6 +793,12 @@ function shortMoney(n) {
 function monthName(m) {
   const [y, mo] = m.split('-').map(Number);
   return new Date(y, mo - 1, 1).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+}
+/** "Septiembre 2026" — sin el "de", para titulos. */
+function monthTitle(m) {
+  const [y, mo] = m.split('-').map(Number);
+  const nombre = new Date(y, mo - 1, 1).toLocaleDateString('es-AR', { month: 'long' });
+  return nombre.charAt(0).toUpperCase() + nombre.slice(1) + ' ' + y;
 }
 /** Etiqueta corta del mes desplazado: monthShort('2026-08', -1) → "jul 2026". */
 function monthShort(m, delta) {
@@ -751,6 +898,7 @@ async function flushQueue() {
         }
       }
       saveCache();
+      LS.set('lastSync', Date.now());
       render();
       toast('✓ Sincronizado con Google Sheets');
     }
@@ -818,24 +966,16 @@ function cleanTx(tx) {
 /* ================= Render principal ================= */
 
 function render() {
-  $('month-label').innerHTML = monthName(viewMonth) + '<small>' + (viewMonth === todayStr().slice(0,7) ? 'mes actual' : '&nbsp;') + '</small>';
-  $('prev-month').innerHTML = '‹<span>' + monthShort(viewMonth, -1) + '</span>';
-  $('next-month').innerHTML = '<span>' + monthShort(viewMonth, 1) + '</span>›';
+  $('month-label').textContent = monthTitle(viewMonth);
 
   const txs = (txCache[viewMonth] || []).slice().sort((a, b) => b.date.localeCompare(a.date) || (b.created || '').localeCompare(a.created || ''));
   const inTotal = txs.filter(t => t.type === 'ingreso').reduce((s, t) => s + t.amount, 0);
   const outTotal = txs.filter(t => t.type === 'gasto').reduce((s, t) => s + t.amount, 0);
   const bal = inTotal - outTotal;
 
-  $('sum-in').textContent = money(inTotal);
-  $('sum-out').textContent = money(outTotal);
-  $('sum-bal').textContent = money(bal);
-  $('sum-bal').className = bal < 0 ? 'neg' : 'pos';
-  const tot = inTotal + outTotal;
-  $('bar-in').style.width = tot ? (inTotal / tot * 100) + '%' : '0%';
-  $('bar-out').style.width = tot ? (outTotal / tot * 100) + '%' : '0%';
-
-  renderCatSummary(txs, catSumType === 'ingreso' ? inTotal : outTotal);
+  $('sum-in').textContent = money0(inTotal);
+  $('sum-out').textContent = money0(outTotal);
+  $('sum-bal').innerHTML = moneyHtml(bal);
 
   const calOn = viewMode === 'cal';
   $('view-cal').classList.toggle('on', calOn);
@@ -849,36 +989,85 @@ function render() {
   updatePendingBadge();
 }
 
-function renderCatSummary(txs, typeTotal) {
-  const rows = $('cat-summary-rows');
-  $('cs-tab-gasto').classList.toggle('on', catSumType === 'gasto');
-  $('cs-tab-ingreso').classList.toggle('on', catSumType === 'ingreso');
+/* ---------- Hoja "En qué se fue": rosquilla + desglose ---------- */
+
+const GRIS_RESTO = '#b9c4c3';
+
+function openBreakdown(tipo) {
+  bdType = tipo || 'gasto';
+  renderBreakdown();
+  openSheet('ov-breakdown');
+}
+
+function renderBreakdown() {
+  $('bd-tab-gasto').classList.toggle('on', bdType === 'gasto');
+  $('bd-tab-ingreso').classList.toggle('on', bdType === 'ingreso');
+  $('bd-month').textContent = monthTitle(viewMonth);
+  $('bd-title').textContent = bdType === 'ingreso' ? 'De d\u00f3nde vino' : 'En qu\u00e9 se fue';
+
+  const txs = txCache[viewMonth] || [];
   const byCat = {};
-  txs.filter(t => t.type === catSumType).forEach(t => { byCat[t.cat] = (byCat[t.cat] || 0) + t.amount; });
+  txs.filter(t => t.type === bdType).forEach(t => { byCat[t.cat] = (byCat[t.cat] || 0) + t.amount; });
   const entries = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
-  rows.innerHTML = '';
+  const total = entries.reduce((acc, e) => acc + e[1], 0);
+
+  const legend = $('bd-legend'), rows = $('bd-rows');
   if (!entries.length) {
-    rows.innerHTML = '<div class="cat-sum-empty">Sin ' + (catSumType === 'ingreso' ? 'ingresos' : 'gastos') + ' este mes</div>';
+    $('bd-chart-box').style.display = 'none';
+    rows.innerHTML = emptyHtml('dona', 'Sin ' + (bdType === 'ingreso' ? 'ingresos' : 'gastos') + ' en ' + monthName(viewMonth) + '.');
     return;
   }
-  for (const [name, total] of entries) {
-    const c = catOf(catSumType, name);
-    const pct = typeTotal ? total / typeTotal * 100 : 0;
+  $('bd-chart-box').style.display = '';
+
+  // La rosquilla muestra las cinco principales y agrupa el resto en "Otras".
+  const top = entries.slice(0, 5).map(([name, val]) => ({ name, val, color: catOf(bdType, name).color }));
+  const resto = entries.slice(5).reduce((acc, e) => acc + e[1], 0);
+  const slices = resto > 0 ? top.concat([{ name: 'Otras', val: resto, color: GRIS_RESTO }]) : top;
+
+  drawDonut($('bd-donut'), slices, total);
+
+  legend.innerHTML = '';
+  for (const sl of slices) {
+    const row = document.createElement('div');
+    row.className = 'lg-row';
+    row.innerHTML = '<i style="background:' + sl.color + '"></i><span></span><b></b>';
+    row.querySelector('span').textContent = sl.name;
+    row.querySelector('b').textContent = Math.round(sl.val / total * 100) + '%';
+    legend.appendChild(row);
+  }
+
+  rows.innerHTML = '';
+  for (const [name, val] of entries) {
+    const c = catOf(bdType, name);
     const row = document.createElement('button');
     row.type = 'button';
-    row.className = 'cat-sum-row';
-    row.innerHTML =
-      catIconHtml(c, ';width:32px;height:32px;min-width:32px') +
-      '<div class="cat-sum-bar-wrap">' +
-        '<div class="cat-sum-top"><span class="cat-sum-name"></span><b></b></div>' +
-        '<div class="cat-sum-bar"><div style="width:' + pct.toFixed(1) + '%;background:' + c.color + '"></div></div>' +
-      '</div>' +
-      '<span class="cat-sum-arrow">›</span>';
-    row.querySelector('.cat-sum-name').textContent = name + ' · ' + pct.toFixed(0) + '%';
-    row.querySelector('b').textContent = money(total);
-    row.addEventListener('click', () => openCatDetail(catSumType, name));
+    row.className = 'bd-row';
+    row.innerHTML = catIconHtml(c, ';width:34px;height:34px;min-width:34px') +
+      '<span class="nm"></span><span class="am"></span><span class="ar">\u203a</span>';
+    row.querySelector('.nm').textContent = name;
+    row.querySelector('.am').textContent = money0(val);
+    row.addEventListener('click', () => openCatDetail(bdType, name));
     rows.appendChild(row);
   }
+}
+
+/** Rosquilla en SVG: un arco por porci\u00f3n, con una peque\u00f1a separaci\u00f3n entre ellas. */
+function drawDonut(el, slices, total) {
+  const R = 52, GROSOR = 19, C = 2 * Math.PI * R, SEP = 3;
+  let off = 0, arcos = '';
+  for (const sl of slices) {
+    const largo = Math.max(1, (sl.val / total) * C - SEP);
+    arcos += '<circle cx="70" cy="70" r="' + R + '" fill="none" stroke="' + sl.color + '"' +
+      ' stroke-width="' + GROSOR + '" stroke-linecap="round"' +
+      ' stroke-dasharray="' + largo.toFixed(2) + ' ' + (C - largo).toFixed(2) + '"' +
+      ' stroke-dashoffset="' + (-off).toFixed(2) + '"></circle>';
+    off += (sl.val / total) * C;
+  }
+  el.innerHTML = '<svg viewBox="0 0 140 140">' +
+    '<g transform="rotate(-90 70 70)">' + arcos + '</g>' +
+    '<text class="dt-lbl" x="70" y="64">TOTAL</text>' +
+    '<text class="dt-val" x="70" y="88">' + shortMoney(total) + '</text>' +
+    '</svg>';
 }
 
 /* ---------- Hoja: movimientos de una categoría ---------- */
@@ -907,7 +1096,7 @@ function renderCatDetail() {
   const box = $('cd-list');
   box.innerHTML = '';
   if (!list.length) {
-    box.innerHTML = '<div class="empty" style="padding:34px 20px"><div class="big">🔍</div>Sin movimientos de esta categoría en ' + monthName(viewMonth) + '.</div>';
+    box.innerHTML = emptyHtml('etiqueta', 'Sin movimientos de esta categoría en ' + monthName(viewMonth) + '.');
     return;
   }
   for (const t of list) box.appendChild(txRowEl(t, true));
@@ -1003,7 +1192,7 @@ function renderDaySheet() {
   const box = $('day-list');
   box.innerHTML = '';
   if (!list.length) {
-    box.innerHTML = '<div class="empty" style="padding:34px 20px"><div class="big">🗓️</div>Sin movimientos este día.</div>';
+    box.innerHTML = emptyHtml('reloj', 'Sin movimientos este día.');
     return;
   }
   for (const t of list) box.appendChild(txRowEl(t));
@@ -1013,7 +1202,7 @@ function renderTxList(txs) {
   const wrap = $('tx-list');
   wrap.innerHTML = '';
   if (!txs.length) {
-    wrap.innerHTML = '<div class="empty"><div class="big">📋</div>No hay movimientos en ' + monthName(viewMonth) + '.<br>Tocá el botón <b>+</b> para cargar el primero.</div>';
+    wrap.innerHTML = emptyHtml('nota', 'No hay movimientos en ' + monthName(viewMonth) + '.<br>Tocá el botón <b>+</b> para cargar el primero.');
     return;
   }
   // Por monto: lista plana, con la fecha en cada fila (abarca todo el mes).
@@ -1022,7 +1211,10 @@ function renderTxList(txs) {
     const lista = txs.slice().sort((a, b) => signo * (a.amount - b.amount));
     const g = document.createElement('div');
     g.className = 'day-group';
-    for (const t of lista) g.appendChild(txRowEl(t, true));
+    const card = document.createElement('div');
+    card.className = 'tx-card';
+    for (const t of lista) card.appendChild(txRowEl(t, true));
+    g.appendChild(card);
     wrap.appendChild(g);
     return;
   }
@@ -1040,11 +1232,14 @@ function renderTxList(txs) {
     g.className = 'day-group';
     const head = document.createElement('div');
     head.className = 'day-head';
-    head.innerHTML = '<span></span><span class="' + (dayIn - dayOut < 0 ? 'neg' : 'pos') + '"></span>';
-    head.children[0].textContent = dayName(day);
-    head.children[1].textContent = money(dayIn - dayOut);
+    head.innerHTML = '<span></span><b class="' + (dayIn - dayOut < 0 ? 'neg' : 'pos') + '"></b>';
+    head.children[0].textContent = dayHeadLabel(day);
+    head.children[1].textContent = (dayIn - dayOut < 0 ? '\u2212 ' : '+ ') + money0(Math.abs(dayIn - dayOut));
     g.appendChild(head);
-    for (const t of list) g.appendChild(txRowEl(t));
+    const card = document.createElement('div');
+    card.className = 'tx-card';
+    for (const t of list) card.appendChild(txRowEl(t));
+    g.appendChild(card);
     wrap.appendChild(g);
   }
 }
@@ -1173,6 +1368,7 @@ $('btn-del-tx').addEventListener('click', () => {
 function refreshOpenDetails() {
   if ($('ov-day').classList.contains('open')) renderDaySheet();
   if ($('ov-cat-detail').classList.contains('open')) renderCatDetail();
+  if ($('ov-breakdown').classList.contains('open')) renderBreakdown();
 }
 
 $('btn-add-day').addEventListener('click', () => openTxSheet(null, selectedDay));
@@ -1191,7 +1387,7 @@ function renderCatsList() {
   for (const c of catsSorted(catsTab)) {
     const row = document.createElement('div');
     row.className = 'cat-list-row';
-    row.innerHTML = catIconHtml(c) + '<span></span><button class="edit-pencil">✏️</button>';
+    row.innerHTML = catIconHtml(c) + '<span></span><button class="edit-pencil" aria-label="Editar"><svg><use href="#i-herramienta"></use></svg></button>';
     row.querySelector('span').textContent = c.name;
     row.querySelector('button').addEventListener('click', () => openCatEditor(c));
     list.appendChild(row);
@@ -1200,6 +1396,7 @@ function renderCatsList() {
 $('cats-tab-gasto').addEventListener('click', () => { catsTab = 'gasto'; renderCatsList(); });
 $('cats-tab-ingreso').addEventListener('click', () => { catsTab = 'ingreso'; renderCatsList(); });
 $('btn-add-cat').addEventListener('click', () => openCatEditor(null));
+$('c-name').addEventListener('input', paintCatPreview);
 
 function openCatEditor(cat) {
   editingCat = cat;
@@ -1209,6 +1406,7 @@ function openCatEditor(cat) {
   $('btn-del-cat').style.display = cat ? '' : 'none';
   paintIconPicker();
   paintColorGrid();
+  paintCatPreview();
   openSheet('ov-cat-edit');
 }
 
@@ -1228,7 +1426,7 @@ function paintIconPicker() {
       b.className = 'icon-cell' + (catForm.icon === ic ? ' sel' : '');
       b.style.color = catForm.color;
       b.innerHTML = '<svg><use href="#i-' + ic + '"></use></svg>';
-      b.addEventListener('click', () => { catForm.icon = ic; paintIconPicker(); });
+      b.addEventListener('click', () => { catForm.icon = ic; paintIconPicker(); paintCatPreview(); });
       g.appendChild(b);
     }
     box.appendChild(g);
@@ -1242,9 +1440,17 @@ function paintColorGrid() {
     b.type = 'button';
     b.className = 'color-dot' + (catForm.color === c ? ' sel' : '');
     b.style.background = c;
-    b.addEventListener('click', () => { catForm.color = c; paintColorGrid(); paintIconPicker(); });
+    b.addEventListener('click', () => { catForm.color = c; paintColorGrid(); paintIconPicker(); paintCatPreview(); });
     g.appendChild(b);
   }
+}
+
+/** Muestra cómo va a quedar la categoría mientras se la edita. */
+function paintCatPreview() {
+  const nombre = $('c-name').value.trim();
+  $('c-preview').innerHTML = catIconHtml(catForm) +
+    '<span class="nm' + (nombre ? '' : ' vacio') + '"></span>';
+  $('c-preview').querySelector('.nm').textContent = nombre || 'Nombre de la categoría';
 }
 
 $('btn-save-cat').addEventListener('click', () => {
@@ -1296,12 +1502,18 @@ function openSettings() {
 }
 
 function paintSyncStatus(conn) {
-  const dc = $('dot-conn'), tc = $('txt-conn');
-  if (conn === true) { dc.className = 'dot ok'; tc.textContent = 'Conectado a Google Sheets'; }
+  const dc = $('dot-conn'), tc = $('txt-conn'), mc = $('meta-conn');
+  if (conn === true) { dc.className = 'dot ok'; tc.textContent = 'Conectado a la planilla'; }
   else if (conn === false) { dc.className = 'dot bad'; tc.textContent = 'No se pudo conectar'; }
-  else { dc.className = 'dot ' + (config.scriptUrl ? 'warn' : ''); tc.textContent = config.scriptUrl ? 'Configurado (sin probar ahora)' : 'Sin configurar'; }
+  else if (config.scriptUrl) { dc.className = 'dot ok'; tc.textContent = 'Conectado a la planilla'; }
+  else { dc.className = 'dot'; tc.textContent = 'Sin configurar'; }
+  mc.textContent = config.scriptUrl ? haceCuanto(LS.get('lastSync', 0)) : '';
+
   $('dot-pend').className = 'dot ' + (queue.length ? 'warn' : 'ok');
-  $('txt-pend').textContent = queue.length ? queue.length + ' movimiento(s) pendiente(s) de sincronizar' : 'Todo sincronizado';
+  $('txt-pend').textContent = queue.length
+    ? queue.length + (queue.length === 1 ? ' movimiento en cola' : ' movimientos en cola')
+    : 'Todo sincronizado';
+  $('meta-pend').textContent = queue.length ? 'se envían solos' : '';
 }
 
 $('btn-save-settings').addEventListener('click', async () => {
@@ -1365,8 +1577,26 @@ $('sort-mode').value = sortMode;
 
 $('view-cal').addEventListener('click', () => setViewMode('cal'));
 $('view-list').addEventListener('click', () => setViewMode('list'));
-$('cs-tab-gasto').addEventListener('click', () => { catSumType = 'gasto'; render(); });
-$('cs-tab-ingreso').addEventListener('click', () => { catSumType = 'ingreso'; render(); });
+$('bd-tab-gasto').addEventListener('click', () => { bdType = 'gasto'; renderBreakdown(); });
+$('bd-tab-ingreso').addEventListener('click', () => { bdType = 'ingreso'; renderBreakdown(); });
+$('card-in').addEventListener('click', () => openBreakdown('ingreso'));
+$('card-out').addEventListener('click', () => openBreakdown('gasto'));
+
+/* ---------- Tema claro / oscuro / automático ---------- */
+function aplicarTema() {
+  document.documentElement.setAttribute('data-theme', tema);
+  document.querySelectorAll('#theme-seg button').forEach(b => {
+    b.classList.toggle('on', b.dataset.tema === tema);
+  });
+  // La barra del navegador acompaña al color del hero.
+  const hero = getComputedStyle(document.documentElement).getPropertyValue('--hero').trim();
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta && hero) meta.setAttribute('content', hero);
+}
+document.querySelectorAll('#theme-seg button').forEach(b => {
+  b.addEventListener('click', () => { tema = b.dataset.tema; LS.set('tema', tema); aplicarTema(); });
+});
+aplicarTema();
 $('prev-month').addEventListener('click', () => shiftMonth(-1));
 $('next-month').addEventListener('click', () => shiftMonth(1));
 $('fab').addEventListener('click', () => openTxSheet(null));
@@ -1390,7 +1620,7 @@ render();
 flushQueue();
 pullMonth(viewMonth);
 if (!config.scriptUrl) {
-  setTimeout(() => toast('Bienvenido 👋 Configurá la conexión con Google Sheets en ⚙️'), 600);
+  setTimeout(() => toast('Bienvenido 👋 Configurá la conexión con Google Sheets desde el botón ···'), 600);
 }
 </script>
 </body>
