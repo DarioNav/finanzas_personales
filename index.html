@@ -172,6 +172,16 @@
   .hcard-top i.out { background: var(--red); }
   .hcard b { display: block; margin-top: 5px; font-size: 17px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+  /* Barra de ingresos que se va consumiendo con los gastos.
+     El carril rojizo es lo ya gastado; el verde, lo que queda. */
+  .hero-progress { margin-top: 16px; }
+  .hero-track { height: 8px; border-radius: 5px; background: rgba(220,75,69,.32); overflow: hidden; }
+  .hero-fill { height: 100%; border-radius: 5px; background: var(--green); transition: width .35s ease; }
+  .hero-fill.excedido { background: var(--red); }
+  .hero-legend { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: 8px; font-size: 11.5px; color: var(--hero-soft); }
+  .hero-legend span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hero-legend b { color: var(--hero-txt); font-weight: 700; font-size: 12.5px; flex: none; }
+
   /* ---------- Segmentado Calendario / Lista ---------- */
   .seg { display: flex; background: var(--chip); border-radius: var(--r-sm); padding: 3px; gap: 3px; }
   .seg button {
@@ -428,6 +438,13 @@
       <span class="hcard-top"><i class="out"></i>Gastos</span>
       <b id="sum-out"></b>
     </button>
+  </div>
+  <div class="hero-progress" id="hero-progress">
+    <div class="hero-track"><div class="hero-fill" id="hero-fill"></div></div>
+    <div class="hero-legend">
+      <span id="hero-left"></span>
+      <b id="hero-pct"></b>
+    </div>
   </div>
 </header>
 
@@ -990,6 +1007,7 @@ function render() {
   $('sum-in').textContent = money0(inTotal);
   $('sum-out').textContent = money0(outTotal);
   $('sum-bal').innerHTML = moneyHtml(bal);
+  renderHeroBar(inTotal, outTotal);
 
   const calOn = viewMode === 'cal';
   $('view-cal').classList.toggle('on', calOn);
@@ -1138,6 +1156,29 @@ function txRowEl(t, showDate) {
 }
 
 /* ---------- Vista calendario ---------- */
+
+/**
+ * Barra del hero: cuánto queda de los ingresos del mes.
+ * Sin ingresos cargados no hay nada que consumir, así que no se muestra.
+ */
+function renderHeroBar(inTotal, outTotal) {
+  const box = $('hero-progress');
+  if (!inTotal) { box.style.display = 'none'; return; }
+  box.style.display = '';
+
+  const queda = inTotal - outTotal;
+  const excedido = queda < 0;
+  const pct = excedido ? 100 : Math.round(queda / inTotal * 100);
+
+  const fill = $('hero-fill');
+  fill.style.width = pct + '%';
+  fill.classList.toggle('excedido', excedido);
+
+  $('hero-left').textContent = excedido
+    ? 'Te pasaste por ' + money0(-queda)
+    : 'Te queda ' + money0(queda) + ' de ' + money0(inTotal);
+  $('hero-pct').textContent = excedido ? '—' : pct + '%';
+}
 
 function renderCalendar(txs) {
   const grid = $('cal-grid');
