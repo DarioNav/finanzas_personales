@@ -1,7 +1,7 @@
 /* Service worker de Mis Finanzas: cachea la app para que abra sin conexión.
    Las llamadas a Google Apps Script van siempre por red (nunca se cachean). */
 
-const CACHE = 'mis-finanzas-v4';
+const CACHE = 'mis-finanzas-v5';
 const ASSETS = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {
