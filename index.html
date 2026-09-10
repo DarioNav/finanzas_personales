@@ -114,6 +114,8 @@
     background: var(--bg); color: var(--txt);
     overscroll-behavior-y: contain;
     -webkit-font-smoothing: antialiased;
+    display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 64px);
   }
   button { font-family: inherit; border: none; background: none; cursor: pointer; color: inherit; }
   input, select, textarea { font-family: inherit; font-size: 16px; }
@@ -190,26 +192,32 @@
   }
   .seg button svg { width: 15px; height: 15px; fill: currentColor; }
   .seg button.on { background: var(--chip-on); color: var(--txt); box-shadow: var(--sh); }
-  .view-toggle { margin: 14px 14px 12px; }
+  .view-toggle { margin: 12px 12px 10px; }
 
-  /* ---------- Calendario ---------- */
-  .calendar { margin: 0 14px 12px; background: var(--card); border-radius: var(--r); box-shadow: var(--sh); padding: 10px 6px 8px; }
-  .cal-dows { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 4px; }
-  .cal-dows div { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: .06em; color: var(--faint); text-transform: uppercase; padding-bottom: 4px; }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+  /* ---------- Calendario ----------
+     Ocupa todo el alto que sobra hasta la barra de abajo: las semanas se
+     reparten ese espacio en partes iguales (grid-auto-rows: 1fr). */
+  .calendar {
+    flex: 1; min-height: 0; display: flex; flex-direction: column;
+    margin: 0 12px 12px; padding: 12px 8px 10px;
+    background: var(--card); border-radius: var(--r); box-shadow: var(--sh);
+  }
+  .cal-dows { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 6px; }
+  .cal-dows div { text-align: center; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; color: var(--faint); text-transform: uppercase; padding-bottom: 5px; }
+  .cal-grid { flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: minmax(52px, 1fr); gap: 2px; }
   .cal-cell {
-    min-height: 46px; padding: 3px 1px 4px; display: flex; flex-direction: column;
-    align-items: center; gap: 2px; border-radius: 10px;
+    min-height: 0; padding: 5px 1px; display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start; gap: 3px; border-radius: 10px;
   }
   .cal-cell.out .cal-day { color: var(--faint); opacity: .45; }
   .cal-cell.has:active { background: var(--accent-soft); }
   .cal-day {
-    width: 24px; height: 24px; border-radius: 50%; font-size: 13px;
+    width: 28px; height: 28px; min-height: 28px; border-radius: 50%; font-size: 14.5px;
     display: flex; align-items: center; justify-content: center; line-height: 1;
   }
   .cal-cell.today .cal-day { background: var(--accent); color: var(--accent-txt); font-weight: 700; }
   .cal-cell.sel .cal-day { box-shadow: 0 0 0 2px var(--accent); }
-  .cal-amt { font-size: 9px; line-height: 1.25; font-weight: 700; letter-spacing: -.01em; }
+  .cal-amt { font-size: 10px; line-height: 1.3; font-weight: 700; letter-spacing: -.01em; }
   .cal-amt.o { color: var(--red); }
   .cal-amt.i { color: var(--green); }
 
@@ -252,20 +260,22 @@
   .empty { text-align: center; color: var(--soft); padding: 44px 20px; font-size: 14.5px; line-height: 1.5; }
   .empty svg { width: 40px; height: 40px; fill: var(--faint); margin-bottom: 12px; }
 
-  /* ---------- FAB ---------- */
-  .fab {
-    position: fixed; right: 18px; bottom: calc(env(safe-area-inset-bottom) + 20px);
-    width: 56px; height: 56px; border-radius: 19px;
-    background: var(--accent); color: var(--accent-txt); font-size: 30px; font-weight: 300;
+  /* ---------- Barra "+" fija abajo ---------- */
+  .addbar {
+    position: fixed; left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom) + 10px);
+    height: 46px; border-radius: 14px;
+    background: var(--accent); color: var(--accent-txt);
+    font-size: 15px; font-weight: 700; letter-spacing: -.01em;
     box-shadow: var(--sh-lg);
-    display: flex; align-items: center; justify-content: center; z-index: 30;
+    display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 30;
   }
-  .fab:active { transform: scale(.94); background: var(--accent-hi); }
+  .addbar i { font-style: normal; font-size: 21px; font-weight: 400; line-height: 1; margin-top: -2px; }
+  .addbar:active { transform: scale(.985); background: var(--accent-hi); }
 
   /* ---------- Hojas ---------- */
   .sheet-overlay { position: fixed; inset: 0; background: rgba(8,22,21,.5); z-index: 40; display: none; align-items: flex-end; }
   .sheet-overlay.open { display: flex; }
-  #ov-day, #ov-cat-detail, #ov-breakdown { z-index: 38; }
+  #ov-cat-detail, #ov-breakdown { z-index: 38; }
   .sheet {
     background: var(--bg); width: 100%; max-height: 92vh; overflow-y: auto;
     border-radius: 22px 22px 0 0; animation: up .2s ease-out;
@@ -310,6 +320,16 @@
   .tx-top { position: sticky; top: 0; z-index: 3; background: var(--bg); }
   .tx-top .sheet-head { position: static; }
   .tx-top .form-block { margin-bottom: 12px; }
+
+  /* Desplegable opcional con lo ya cargado en la fecha elegida. */
+  .day-peek { margin: 0 14px 12px; background: var(--card); border-radius: var(--r); box-shadow: var(--sh); overflow: hidden; }
+  .day-peek-head { width: 100%; display: flex; align-items: center; gap: 8px; padding: 11px 14px; text-align: left; }
+  .day-peek-head .chev { font-size: 10px; color: var(--soft); transition: transform .18s ease; }
+  .day-peek.open .day-peek-head .chev { transform: rotate(180deg); }
+  .day-peek-head .lbl { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: var(--soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .day-peek-head b { font-size: 13.5px; font-weight: 700; }
+  .day-peek-body { border-top: 1px solid var(--line); }
+  .day-peek-body .tx-row:first-child { border-top: none; }
 
   .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 2px; }
   .cat-cell { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 7px 2px; border-radius: var(--r-sm); }
@@ -474,7 +494,7 @@
 
 <div class="tx-section" id="tx-list"></div>
 
-<button class="fab" id="fab">+</button>
+<button class="addbar" id="fab"><i>+</i>Agregar movimiento</button>
 
 <!-- ===== Desglose por categoría ("En qué se fue") ===== -->
 <div class="sheet-overlay" id="ov-breakdown">
@@ -500,28 +520,6 @@
     <div class="form-block flush">
       <div id="bd-rows"></div>
     </div>
-  </div>
-</div>
-
-<!-- ===== Day detail ===== -->
-<div class="sheet-overlay" id="ov-day">
-  <div class="sheet">
-    <div class="grab"></div>
-    <div class="sheet-head">
-      <div class="sheet-title" id="day-title"></div>
-      <button class="close-x" data-close="ov-day" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
-    </div>
-    <div class="form-block">
-      <div class="day-totals">
-        <div><div class="lbl lbl-in">Ingresos</div><div class="val pos" id="day-in"></div></div>
-        <div><div class="lbl lbl-out">Gastos</div><div class="val neg" id="day-out"></div></div>
-        <div><div class="lbl">Saldo</div><div class="val" id="day-bal"></div></div>
-      </div>
-    </div>
-    <div class="form-block flush" id="day-list-box">
-      <div id="day-list"></div>
-    </div>
-    <button class="primary-btn" id="btn-add-day">+ Agregar movimiento este día</button>
   </div>
 </div>
 
@@ -569,6 +567,15 @@
           <button class="save-inline" id="btn-save-tx">Guardar</button>
         </div>
       </div>
+    </div>
+    <!-- Plegado por defecto: solo aparece si la fecha elegida ya tiene movimientos. -->
+    <div class="day-peek" id="day-peek" style="display:none">
+      <button type="button" class="day-peek-head" id="day-peek-btn" aria-expanded="false">
+        <span class="chev">&#9660;</span>
+        <span class="lbl" id="day-peek-lbl"></span>
+        <b id="day-peek-sum"></b>
+      </button>
+      <div class="day-peek-body" id="day-peek-body" style="display:none"></div>
     </div>
     <div class="form-block">
       <div class="field-label">Categoría</div>
@@ -836,10 +843,6 @@ function monthShort(m, delta) {
   const [y, mo] = m.split('-').map(Number);
   const d = new Date(y, mo - 1 + delta, 1);
   return d.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '') + ' ' + d.getFullYear();
-}
-function dayName(dateStr) {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
 }
 /** '2026-08-19' → "mié 19 ago" (para listas que abarcan varios días). */
 function shortDate(dateStr) {
@@ -1215,42 +1218,10 @@ function renderCalendar(txs) {
     if (b && b.out) html += '<div class="cal-amt o">' + shortMoney(b.out) + '</div>';
     if (b && b.in) html += '<div class="cal-amt i">' + shortMoney(b.in) + '</div>';
     cell.innerHTML = html;
-    cell.addEventListener('click', () => openDaySheet(ds));
+    // Tocar un día va directo a cargar; lo ya cargado se ve en el desplegable.
+    cell.addEventListener('click', () => { selectedDay = ds; openTxSheet(null, ds); render(); });
     grid.appendChild(cell);
   }
-}
-
-/* ---------- Hoja: detalle de un día ---------- */
-
-function openDaySheet(date) {
-  selectedDay = date;
-  renderDaySheet();
-  openSheet('ov-day');
-  if (viewMode === 'cal') render();
-}
-
-function renderDaySheet() {
-  if (!selectedDay) return;
-  const list = (txCache[selectedDay.slice(0, 7)] || [])
-    .filter(t => t.date === selectedDay)
-    .sort((a, b) => (b.created || '').localeCompare(a.created || ''));
-
-  const dIn = list.filter(t => t.type === 'ingreso').reduce((s, t) => s + t.amount, 0);
-  const dOut = list.filter(t => t.type === 'gasto').reduce((s, t) => s + t.amount, 0);
-
-  $('day-title').textContent = dayName(selectedDay);
-  $('day-in').textContent = money(dIn);
-  $('day-out').textContent = money(dOut);
-  $('day-bal').textContent = money(dIn - dOut);
-  $('day-bal').className = 'val ' + (dIn - dOut < 0 ? 'neg' : 'pos');
-
-  const box = $('day-list');
-  box.innerHTML = '';
-  if (!list.length) {
-    box.innerHTML = emptyHtml('reloj', 'Sin movimientos este día.');
-    return;
-  }
-  for (const t of list) box.appendChild(txRowEl(t));
 }
 
 function renderTxList(txs) {
@@ -1316,9 +1287,52 @@ function openTxSheet(tx, presetDate) {
   $('btn-del-tx').style.display = tx ? '' : 'none';
   paintTypeToggle();
   paintCatGrid();
+  renderDayPeek(true);
   openSheet('ov-tx');
   if (!tx) setTimeout(() => $('f-amount').focus(), 250);
 }
+
+/**
+ * Desplegable de la hoja de carga: qué hay ya cargado en la fecha elegida.
+ * Si el día está vacío no se muestra nada. Con `plegar` vuelve a cerrarse
+ * (al abrir la hoja); sin él respeta si el usuario lo había desplegado.
+ */
+function renderDayPeek(plegar) {
+  const box = $('day-peek');
+  const date = $('f-date').value;
+  const list = (date ? (txCache[date.slice(0, 7)] || []) : [])
+    .filter(t => t.date === date && !(editing && t.id === editing.tx.id))
+    .sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+
+  if (!list.length) { box.style.display = 'none'; return; }
+  box.style.display = '';
+
+  const dIn = list.filter(t => t.type === 'ingreso').reduce((s, t) => s + t.amount, 0);
+  const dOut = list.filter(t => t.type === 'gasto').reduce((s, t) => s + t.amount, 0);
+  const neto = dIn - dOut;
+
+  $('day-peek-lbl').textContent = dayHeadLabel(date) + ' \u00b7 ' +
+    list.length + (list.length === 1 ? ' movimiento' : ' movimientos');
+  $('day-peek-sum').textContent = (neto < 0 ? '\u2212 ' : '+ ') + money0(Math.abs(neto));
+  $('day-peek-sum').className = neto < 0 ? 'neg' : 'pos';
+
+  const body = $('day-peek-body');
+  body.innerHTML = '';
+  for (const t of list) body.appendChild(txRowEl(t));
+
+  if (plegar) setDayPeekOpen(false);
+}
+
+function setDayPeekOpen(abierto) {
+  $('day-peek').classList.toggle('open', abierto);
+  $('day-peek-body').style.display = abierto ? '' : 'none';
+  $('day-peek-btn').setAttribute('aria-expanded', abierto ? 'true' : 'false');
+}
+
+$('day-peek-btn').addEventListener('click', () => {
+  setDayPeekOpen(!$('day-peek').classList.contains('open'));
+});
+$('f-date').addEventListener('change', () => renderDayPeek(false));
 
 function paintTypeToggle() {
   $('tg-gasto').className = formType === 'gasto' ? 'sel-gasto' : '';
@@ -1404,8 +1418,8 @@ $('btn-save-tx').addEventListener('click', () => {
     toast(formType === 'gasto' ? 'Gasto guardado' : 'Ingreso guardado');
   }
   viewMonth = date.slice(0, 7);
-  // Si venía del detalle de un día, seguir al movimiento a su nueva fecha.
-  if ($('ov-day').classList.contains('open')) selectedDay = date;
+  // Si vino de tocar un día en el calendario, seguirlo a su nueva fecha.
+  if (selectedDay) selectedDay = date;
   closeSheet('ov-tx');
   render();
 });
@@ -1421,12 +1435,10 @@ $('btn-del-tx').addEventListener('click', () => {
 
 /** Repinta las hojas de detalle que hayan quedado abiertas debajo. */
 function refreshOpenDetails() {
-  if ($('ov-day').classList.contains('open')) renderDaySheet();
+  if ($('ov-tx').classList.contains('open')) renderDayPeek(false);
   if ($('ov-cat-detail').classList.contains('open')) renderCatDetail();
   if ($('ov-breakdown').classList.contains('open')) renderBreakdown();
 }
-
-$('btn-add-day').addEventListener('click', () => openTxSheet(null, selectedDay));
 
 /* ================= Hoja: categorías ================= */
 
@@ -1597,8 +1609,8 @@ function openSheet(id) { $(id).classList.add('open'); }
 function closeSheet(id) {
   $(id).classList.remove('open');
   if (id === 'ov-cat-detail') catDetail = null;
-  // Al cerrar el detalle del día se quita el resaltado del calendario.
-  if (id === 'ov-day' && selectedDay) { selectedDay = null; if (viewMode === 'cal') render(); }
+  // Al cerrar la carga se quita el resaltado del día en el calendario.
+  if (id === 'ov-tx' && selectedDay) { selectedDay = null; if (viewMode === 'cal') render(); }
 }
 document.querySelectorAll('.sheet-overlay').forEach(ov => {
   ov.addEventListener('click', e => { if (e.target === ov) closeSheet(ov.id); });
