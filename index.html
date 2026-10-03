@@ -316,10 +316,11 @@
   }
   .save-inline:active { background: var(--accent-hi); transform: scale(.97); }
 
-  /* Cabecera + monto fijos mientras se recorre la lista de categorías. */
+  /* Monto fijo mientras se recorre la lista de categorías. Queda pegado
+     debajo de la cabecera: el `top` exacto lo pone el JS al abrir la hoja. */
   .tx-top { position: sticky; top: 0; z-index: 3; background: var(--bg); }
-  .tx-top .sheet-head { position: static; }
   .tx-top .form-block { margin-bottom: 12px; }
+  #tx-head { z-index: 4; }
 
   /* Desplegable opcional con lo ya cargado en la fecha elegida. */
   .day-peek { margin: 0 14px 12px; background: var(--card); border-radius: var(--r); box-shadow: var(--sh); overflow: hidden; }
@@ -327,6 +328,7 @@
   .day-peek-head .chev { font-size: 10px; color: var(--soft); transition: transform .18s ease; }
   .day-peek.open .day-peek-head .chev { transform: rotate(180deg); }
   .day-peek-head .lbl { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: var(--soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .day-peek.arriba .day-peek-head .lbl { color: var(--txt); font-size: 13.5px; }
   .day-peek-head b { font-size: 13.5px; font-weight: 700; }
   .day-peek-body { border-top: 1px solid var(--line); }
   .day-peek-body .tx-row:first-child { border-top: none; }
@@ -548,13 +550,24 @@
 <div class="sheet-overlay" id="ov-tx">
   <div class="sheet">
     <div class="grab"></div>
-    <!-- Cabecera + monto + Guardar quedan fijos arriba: así se puede guardar
-         sin volver a subir después de elegir la categoría. -->
-    <div class="tx-top">
-      <div class="sheet-head">
-        <div class="sheet-title" id="tx-sheet-title">Nuevo movimiento</div>
-        <button class="close-x" data-close="ov-tx" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
-      </div>
+    <div class="sheet-head" id="tx-head">
+      <div class="sheet-title" id="tx-sheet-title">Nuevo movimiento</div>
+      <button class="close-x" data-close="ov-tx" aria-label="Cerrar"><svg style="width:15px;height:15px;fill:currentColor"><use href="#i-cerrar"></use></svg></button>
+    </div>
+    <!-- Lo que ese día ya tiene cargado. Si se entró tocando el día en el
+         calendario, el JS lo mueve acá arriba y desplegado; si se entró por la
+         barra + o editando, lo deja plegado debajo del monto. -->
+    <div class="day-peek" id="day-peek" style="display:none">
+      <button type="button" class="day-peek-head" id="day-peek-btn" aria-expanded="false">
+        <span class="chev">&#9660;</span>
+        <span class="lbl" id="day-peek-lbl"></span>
+        <b id="day-peek-sum"></b>
+      </button>
+      <div class="day-peek-body" id="day-peek-body" style="display:none"></div>
+    </div>
+    <!-- Monto + Guardar quedan fijos arriba: así se puede guardar sin volver
+         a subir después de elegir la categoría. -->
+    <div class="tx-top" id="tx-top">
       <div class="form-block">
         <div class="type-toggle">
           <button id="tg-gasto">Gasto</button>
@@ -567,15 +580,6 @@
           <button class="save-inline" id="btn-save-tx">Guardar</button>
         </div>
       </div>
-    </div>
-    <!-- Plegado por defecto: solo aparece si la fecha elegida ya tiene movimientos. -->
-    <div class="day-peek" id="day-peek" style="display:none">
-      <button type="button" class="day-peek-head" id="day-peek-btn" aria-expanded="false">
-        <span class="chev">&#9660;</span>
-        <span class="lbl" id="day-peek-lbl"></span>
-        <b id="day-peek-sum"></b>
-      </button>
-      <div class="day-peek-body" id="day-peek-body" style="display:none"></div>
     </div>
     <div class="form-block">
       <div class="field-label">Categoría</div>
@@ -1287,17 +1291,22 @@ function openTxSheet(tx, presetDate) {
   $('btn-del-tx').style.display = tx ? '' : 'none';
   paintTypeToggle();
   paintCatGrid();
-  renderDayPeek(true);
+  // Entrar tocando un día del calendario es para mirar ese día; entrar por la
+  // barra + o editando es para cargar, y ahí la lista estorba adelante.
+  renderDayPeek(!tx && presetDate ? 'arriba' : 'plegado');
   openSheet('ov-tx');
+  $('tx-top').style.top = $('tx-head').offsetHeight + 'px';
   if (!tx) setTimeout(() => $('f-amount').focus(), 250);
 }
 
 /**
- * Desplegable de la hoja de carga: qué hay ya cargado en la fecha elegida.
- * Si el día está vacío no se muestra nada. Con `plegar` vuelve a cerrarse
- * (al abrir la hoja); sin él respeta si el usuario lo había desplegado.
+ * Lista de la hoja de carga: qué hay ya cargado en la fecha elegida.
+ * Si el día está vacío no se muestra nada y la carga queda primera.
+ * `modo`: 'arriba' la pone antes del formulario y desplegada, 'plegado' la
+ * manda debajo del monto y cerrada, y sin modo solo refresca el contenido
+ * sin tocar dónde está ni si el usuario la había abierto.
  */
-function renderDayPeek(plegar) {
+function renderDayPeek(modo) {
   const box = $('day-peek');
   const date = $('f-date').value;
   const list = (date ? (txCache[date.slice(0, 7)] || []) : [])
@@ -1320,7 +1329,16 @@ function renderDayPeek(plegar) {
   body.innerHTML = '';
   for (const t of list) body.appendChild(txRowEl(t));
 
-  if (plegar) setDayPeekOpen(false);
+  if (modo === 'arriba') { moverDayPeek(true); setDayPeekOpen(true); }
+  else if (modo === 'plegado') { moverDayPeek(false); setDayPeekOpen(false); }
+}
+
+/** La lista va antes del formulario ('arriba') o después del monto. */
+function moverDayPeek(arriba) {
+  const peek = $('day-peek'), top = $('tx-top');
+  if (arriba) top.parentNode.insertBefore(peek, top);
+  else top.insertAdjacentElement('afterend', peek);
+  peek.classList.toggle('arriba', arriba);
 }
 
 function setDayPeekOpen(abierto) {
@@ -1332,7 +1350,7 @@ function setDayPeekOpen(abierto) {
 $('day-peek-btn').addEventListener('click', () => {
   setDayPeekOpen(!$('day-peek').classList.contains('open'));
 });
-$('f-date').addEventListener('change', () => renderDayPeek(false));
+$('f-date').addEventListener('change', () => renderDayPeek());
 
 function paintTypeToggle() {
   $('tg-gasto').className = formType === 'gasto' ? 'sel-gasto' : '';
@@ -1435,7 +1453,7 @@ $('btn-del-tx').addEventListener('click', () => {
 
 /** Repinta las hojas de detalle que hayan quedado abiertas debajo. */
 function refreshOpenDetails() {
-  if ($('ov-tx').classList.contains('open')) renderDayPeek(false);
+  if ($('ov-tx').classList.contains('open')) renderDayPeek();
   if ($('ov-cat-detail').classList.contains('open')) renderCatDetail();
   if ($('ov-breakdown').classList.contains('open')) renderBreakdown();
 }
